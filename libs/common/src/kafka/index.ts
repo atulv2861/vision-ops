@@ -1,0 +1,3 @@
+export { KafkaModule } from './kafka.module';
+export { KafkaConsumerService } from './consumer.service';
+export { KafkaProducerService } from './producer.service';

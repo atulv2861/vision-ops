@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from './config';
-import { HealthModule } from './modules/health';
+import { ConfigModule } from '../libs/common/src/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { KafkaModule } from '../libs/common/src/kafka';
+import { OverviewModule } from './overview';
 
 @Module({
-  imports: [ConfigModule, HealthModule],
+  imports: [ConfigModule, KafkaModule, OverviewModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,0 +1,39 @@
+export default () => ({
+  port: parseInt(process.env.PORT ?? '3000', 10),
+  nodeEnv: process.env.NODE_ENV ?? 'development',
+  apiPrefix: process.env.API_PREFIX ?? 'api',
+  cors: {
+    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:3000'],
+    credentials: process.env.CORS_CREDENTIALS === 'true',
+  },
+  logging: {
+    level: process.env.LOG_LEVEL ?? 'info',
+  },
+  kafka: {
+    broker: process.env.KAFKA_BROKER ?? 'localhost:9092',
+    clientId: process.env.KAFKA_CLIENT_ID ?? 'vision-ops-consumer',
+    groupId: process.env.KAFKA_GROUP_ID ?? 'vision-ops-group',
+    connectionTimeout: parseInt(process.env.KAFKA_CONNECTION_TIMEOUT ?? '3000', 10),
+    requestTimeout: parseInt(process.env.KAFKA_REQUEST_TIMEOUT ?? '30000', 10),
+    retry: {
+      retries: parseInt(process.env.KAFKA_RETRIES ?? '5', 10),
+      initialRetryTime: parseInt(process.env.KAFKA_INITIAL_RETRY_TIME ?? '100', 10),
+      multiplier: parseFloat(process.env.KAFKA_RETRY_MULTIPLIER ?? '2'),
+    },
+    producer: {
+      delayBetweenMessages: parseInt(process.env.KAFKA_PRODUCER_DELAY_MS ?? '5000', 10), // 5 seconds default
+      autoProduceEnabled: process.env.KAFKA_AUTO_PRODUCE_ENABLED !== 'false', // Default: true
+      autoProduceInterval: parseInt(process.env.KAFKA_AUTO_PRODUCE_INTERVAL_MS ?? '10000', 10), // 10 seconds default
+    },
+    topics: {
+      cameraEvents: process.env.KAFKA_TOPIC_CAMERA_EVENTS ?? 'visionops.camera.events.v1',
+    },
+  },
+  elasticsearch: {
+    node: process.env.ELASTICSEARCH_NODE ?? 'http://34.173.116.41:9200',
+    username: process.env.ELASTICSEARCH_USERNAME ?? 'elastic',
+    password: process.env.ELASTICSEARCH_PASSWORD ?? 'variphi@2024',
+    index: process.env.ELASTICSEARCH_INDEX ?? 'vision-ops-overview',
+    requestTimeout: parseInt(process.env.ELASTICSEARCH_REQUEST_TIMEOUT ?? '30000', 10),
+  },
+});
