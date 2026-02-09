@@ -23,8 +23,8 @@ export interface CameraEventData {
 @Injectable()
 export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(KafkaProducerService.name);
-  private kafka: Kafka;
-  private producer: Producer;
+    private kafka: Kafka;
+    private producer: Producer;
   private isConnected = false;
   private autoProduceInterval: NodeJS.Timeout | null = null;
   private isProducing = false;
