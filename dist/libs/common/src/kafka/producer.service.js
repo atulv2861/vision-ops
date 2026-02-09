@@ -56,6 +56,8 @@ let KafkaProducerService = KafkaProducerService_1 = class KafkaProducerService {
     kafka;
     producer;
     isConnected = false;
+    autoProduceInterval = null;
+    isProducing = false;
     constructor(configService) {
         this.configService = configService;
         const broker = this.configService.get('kafka.broker') || 'localhost:9092';
@@ -84,10 +86,54 @@ let KafkaProducerService = KafkaProducerService_1 = class KafkaProducerService {
         });
     }
     async onModuleInit() {
-        await this.connect();
+        this.connectWithRetry().catch((error) => {
+            this.logger.warn('Kafka producer will retry connection in background', error.message);
+        });
+        this.startAutoProduction();
     }
     async onModuleDestroy() {
+        this.stopAutoProduction();
         await this.disconnect();
+    }
+    startAutoProduction() {
+        const intervalMs = this.configService.get('kafka.producer.autoProduceInterval', 10000);
+        const enabled = this.configService.get('kafka.producer.autoProduceEnabled', true);
+        if (!enabled) {
+            this.logger.log('Auto-production is disabled');
+            return;
+        }
+        this.logger.log(`Starting automatic CSV production every ${intervalMs}ms (${intervalMs / 1000} seconds)`);
+        this.autoProduceFromCsv().catch((error) => {
+            this.logger.error('Error in initial auto-production', error);
+        });
+        this.autoProduceInterval = setInterval(() => {
+            this.autoProduceFromCsv().catch((error) => {
+                this.logger.error('Error in auto-production', error);
+            });
+        }, intervalMs);
+    }
+    stopAutoProduction() {
+        if (this.autoProduceInterval) {
+            clearInterval(this.autoProduceInterval);
+            this.autoProduceInterval = null;
+            this.logger.log('Stopped automatic CSV production');
+        }
+    }
+    async autoProduceFromCsv() {
+        if (this.isProducing) {
+            this.logger.debug('Auto-production already in progress, skipping this cycle');
+            return;
+        }
+        this.isProducing = true;
+        try {
+            await this.produceFromCsv();
+        }
+        catch (error) {
+            this.logger.error('Auto-production failed', error);
+        }
+        finally {
+            this.isProducing = false;
+        }
     }
     async connect() {
         try {

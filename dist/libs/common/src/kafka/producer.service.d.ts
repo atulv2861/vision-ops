@@ -16,9 +16,14 @@ export declare class KafkaProducerService implements OnModuleInit, OnModuleDestr
     private kafka;
     private producer;
     private isConnected;
+    private autoProduceInterval;
+    private isProducing;
     constructor(configService: ConfigService);
     onModuleInit(): Promise<void>;
     onModuleDestroy(): Promise<void>;
+    private startAutoProduction;
+    private stopAutoProduction;
+    private autoProduceFromCsv;
     private connect;
     private connectWithRetry;
     private disconnect;

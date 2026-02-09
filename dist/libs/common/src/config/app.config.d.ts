@@ -22,6 +22,8 @@ declare const _default: () => {
         };
         producer: {
             delayBetweenMessages: number;
+            autoProduceEnabled: boolean;
+            autoProduceInterval: number;
         };
         topics: {
             cameraEvents: string;

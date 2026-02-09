@@ -22,6 +22,8 @@ export default () => ({
     },
     producer: {
       delayBetweenMessages: parseInt(process.env.KAFKA_PRODUCER_DELAY_MS ?? '5000', 10), // 5 seconds default
+      autoProduceEnabled: process.env.KAFKA_AUTO_PRODUCE_ENABLED !== 'false', // Default: true
+      autoProduceInterval: parseInt(process.env.KAFKA_AUTO_PRODUCE_INTERVAL_MS ?? '10000', 10), // 10 seconds default
     },
     topics: {
       cameraEvents: process.env.KAFKA_TOPIC_CAMERA_EVENTS ?? 'visionops.camera.events.v1',
