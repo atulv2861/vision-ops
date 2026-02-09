@@ -6,14 +6,18 @@ import * as path from 'path';
 const csv = require('csv-parser');
 
 export interface CameraEventData {
-  section: string;
-  entity: string;
-  sub_entity: string;
-  metric: string;
-  value: string;
-  unit: string;
-  extra_info: string;
+  event_id: string;
   timestamp: string;
+  event_type: string;
+  metric_name: string;
+  location: string;
+  value: string;
+  increment: string;
+  previous_value: string;
+  status: string;
+  severity: string;
+  camera_id: string;
+  zone_id: string;
 }
 
 @Injectable()
@@ -219,7 +223,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
         topic,
         messages: [
           {
-            key: key || data.entity || undefined,
+            key: key || data.event_id || data.zone_id || undefined,
             value: JSON.stringify({
               ...data,
               timestamp: data.timestamp || new Date().toISOString(),
@@ -248,7 +252,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     try {
       const topic = this.configService.get<string>('kafka.topics.cameraEvents') || 'visionops.camera.events.v1';
       const kafkaMessages = messages.map(({ data, key }) => ({
-        key: key || data.entity || undefined,
+        key: key || data.event_id || data.zone_id || undefined,
         value: JSON.stringify({
           ...data,
           timestamp: data.timestamp || new Date().toISOString(),
@@ -282,15 +286,31 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
       );
     }
 
-    // Use provided path or default to the vision-ops.csv file
-    const filePath = csvFilePath || path.join(
-      process.cwd(),
-      'libs',
-      'common',
-      'src',
-      'csv',
-      'vision-ops.csv',
-    );
+    // Use provided path or default to the overview.csv file
+    // Try multiple path resolutions
+    let filePath = csvFilePath;
+    if (!filePath) {
+      // Try relative to process.cwd()
+      const path1 = path.join(process.cwd(), 'libs', 'common', 'src', 'csv', 'overview.csv');
+      // Try relative to __dirname (compiled location)
+      const path2 = path.join(__dirname, '..', '..', '..', 'libs', 'common', 'src', 'csv', 'overview.csv');
+      // Try absolute path from project root
+      const path3 = path.resolve(process.cwd(), 'libs', 'common', 'src', 'csv', 'overview.csv');
+      
+      // Check which path exists
+      if (fs.existsSync(path1)) {
+        filePath = path1;
+      } else if (fs.existsSync(path2)) {
+        filePath = path2;
+      } else if (fs.existsSync(path3)) {
+        filePath = path3;
+      } else {
+        filePath = path1; // Default to first option
+      }
+      
+      this.logger.log(`Trying CSV paths - path1: ${path1}, path2: ${path2}, path3: ${path3}`);
+      this.logger.log(`Selected path: ${filePath}, exists: ${fs.existsSync(filePath)}`);
+    }
 
     this.logger.log(`Reading CSV file from: ${filePath}`);
 
@@ -298,38 +318,160 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
       throw new Error(`CSV file not found at: ${filePath}`);
     }
 
+    // Verify file is readable and has content
+    try {
+      const stats = fs.statSync(filePath);
+      this.logger.log(`File size: ${stats.size} bytes`);
+      
+      // Read file content to verify it's not empty
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const lines = fileContent.split(/\r?\n/).filter(line => line.trim());
+      this.logger.log(`File has ${lines.length} lines when read directly`);
+      
+      if (stats.size === 0 && lines.length === 0) {
+        throw new Error(`CSV file is empty at: ${filePath}`);
+      }
+      
+      if (lines.length === 0) {
+        this.logger.warn(`File exists but has no valid lines. File size: ${stats.size} bytes`);
+        // Don't throw error, let CSV parser handle it
+      }
+    } catch (error: any) {
+      // If it's our custom error, throw it
+      if (error.message && error.message.includes('CSV file is empty')) {
+        throw error;
+      }
+      // Otherwise, log and continue - file might still be readable
+      this.logger.warn('Error checking file stats, will attempt to read anyway:', error.message);
+    }
+
     const messages: Array<{ data: CameraEventData; key?: string }> = [];
     let successCount = 0;
     let failedCount = 0;
 
     return new Promise((resolve, reject) => {
+      let rowCount = 0;
+      let hasError = false;
+      
+      // First, try to read file synchronously to verify it has content
+      try {
+        const testContent = fs.readFileSync(filePath, 'utf8');
+        const testLines = testContent.split(/\r?\n/).filter(line => line.trim());
+        this.logger.log(`File verification: ${testLines.length} lines found when reading synchronously`);
+        
+        if (testLines.length === 0) {
+          this.logger.error(`CSV file is empty. File path: ${filePath}`);
+          this.logger.error(`File exists: ${fs.existsSync(filePath)}`);
+          if (fs.existsSync(filePath)) {
+            const stats = fs.statSync(filePath);
+            this.logger.error(`File size: ${stats.size} bytes`);
+          }
+          // Return empty result instead of rejecting to allow app to continue
+          resolve({ success: 0, failed: 0 });
+          return;
+        }
+        
+        this.logger.log(`First line preview: ${testLines[0].substring(0, 100)}`);
+        this.logger.log(`Second line preview: ${testLines[1] ? testLines[1].substring(0, 100) : 'N/A'}`);
+      } catch (err: any) {
+        this.logger.error('Error reading file for verification:', err.message);
+        this.logger.error(`File path attempted: ${filePath}`);
+        // Return empty result instead of rejecting to allow app to continue
+        resolve({ success: 0, failed: 0 });
+        return;
+      }
+      
       const stream = fs
-        .createReadStream(filePath)
-        .pipe(csv())
+        .createReadStream(filePath, { encoding: 'utf8' })
+        .on('error', (error) => {
+          this.logger.error('Error reading CSV file stream:', error);
+          hasError = true;
+          reject(error);
+        })
+        .pipe(csv({
+          skipEmptyLines: true,
+          skipLinesWithError: true,
+          mapHeaders: ({ header }: { header: string }) => header.trim(),
+        }))
+        .on('error', (error: Error) => {
+          this.logger.error('Error parsing CSV stream:', error);
+          hasError = true;
+          reject(error);
+        })
         .on('data', (row: any) => {
-          // Skip empty rows
-          if (!row.section && !row.entity) {
+          rowCount++;
+          this.logger.log(`Processing row ${rowCount}, keys: ${Object.keys(row).join(', ')}`);
+          
+          // Log first row to see what we're getting
+          if (rowCount === 1) {
+            this.logger.log(`First row data: ${JSON.stringify(row)}`);
+          }
+          
+          // Skip header row (csv-parser should handle this, but double-check)
+          if (row.event_id === 'event_id' || row['event_id'] === 'event_id') {
+            this.logger.log('Skipping header row');
             return;
           }
 
-          const eventData: CameraEventData = {
-            section: row.section || '',
-            entity: row.entity || '',
-            sub_entity: row.sub_entity || '',
-            metric: row.metric || '',
-            value: row.value || '',
-            unit: row.unit || '',
-            extra_info: row.extra_info || '',
-            timestamp: row.timestamp || new Date().toISOString(),
+          // Skip completely empty rows
+          const eventId = row.event_id || row['event_id'];
+          const metricName = row.metric_name || row['metric_name'];
+          const eventType = row.event_type || row['event_type'];
+          const location = row.location || row['location'];
+          
+          if (!eventId && !metricName && !eventType && !location) {
+            this.logger.warn(`Skipping empty row ${rowCount}`);
+            return;
+          }
+
+          // Build event data - allow empty strings for optional fields
+          // Handle both dot notation and bracket notation for CSV parser
+          const getValue = (key: string) => {
+            const val = row[key] || row[key.toLowerCase()] || '';
+            return val && typeof val === 'string' ? val.trim() : (val ? val.toString().trim() : '');
           };
 
-          // Use entity as key for partitioning
-          const key = eventData.entity || eventData.section;
+          const eventData: CameraEventData = {
+            event_id: getValue('event_id'),
+            timestamp: getValue('timestamp') || new Date().toISOString(),
+            event_type: getValue('event_type'),
+            metric_name: getValue('metric_name'),
+            location: getValue('location'),
+            value: getValue('value'),
+            increment: getValue('increment'),
+            previous_value: getValue('previous_value'),
+            status: getValue('status'),
+            severity: getValue('severity'),
+            camera_id: getValue('camera_id'),
+            zone_id: getValue('zone_id'),
+          };
+
+          // Use event_id or zone_id as key for partitioning
+          const key = eventData.event_id || eventData.zone_id || eventData.location;
 
           messages.push({ data: eventData, key });
+          this.logger.debug(`Parsed row: ${eventData.event_id || 'no-id'} - ${eventData.metric_name || eventData.event_type}`);
         })
         .on('end', async () => {
-          this.logger.log(`Parsed ${messages.length} rows from CSV file`);
+          this.logger.log(`CSV parsing complete - Total rows processed: ${rowCount}, Valid messages: ${messages.length}`);
+          
+          if (rowCount === 0) {
+            this.logger.error('No rows were read from CSV file. Check file encoding and format.');
+            // Try to read file directly to debug
+            try {
+              const fileContent = fs.readFileSync(filePath, 'utf8');
+              const lines = fileContent.split(/\r?\n/).filter(line => line.trim());
+              this.logger.log(`File has ${lines.length} lines when read directly`);
+              if (lines.length > 0) {
+                this.logger.log(`First line: ${lines[0].substring(0, 200)}`);
+                this.logger.log(`Second line: ${lines[1] ? lines[1].substring(0, 200) : 'N/A'}`);
+              } else {
+                this.logger.error('File appears to be empty or has no valid lines');
+              }
+            } catch (err) {
+              this.logger.error('Error reading file directly:', err);
+            }
+          }
 
           if (messages.length === 0) {
             this.logger.warn('No valid messages found in CSV file');
@@ -349,7 +491,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
               try {
                 await this.produceMessage(message.data, message.key);
                 successCount++;
-                this.logger.debug(`Sent message ${i + 1}/${messages.length} - ${message.data.entity || message.data.section}`);
+                this.logger.debug(`Sent message ${i + 1}/${messages.length} - ${message.data.event_id || message.data.metric_name || message.data.location}`);
                 
                 // Wait before sending next message (except for the last one)
                 if (i < messages.length - 1) {
@@ -382,21 +524,25 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
    * Produce a single event with custom data
    */
   async produceEvent(
-    section: string,
-    entity: string,
+    eventId: string,
+    eventType: string,
     data: Partial<CameraEventData>,
   ): Promise<void> {
     const eventData: CameraEventData = {
-      section,
-      entity,
-      sub_entity: data.sub_entity || '',
-      metric: data.metric || '',
-      value: data.value || '',
-      unit: data.unit || '',
-      extra_info: data.extra_info || '',
+      event_id: eventId,
       timestamp: data.timestamp || new Date().toISOString(),
+      event_type: eventType,
+      metric_name: data.metric_name || '',
+      location: data.location || '',
+      value: data.value || '',
+      increment: data.increment || '',
+      previous_value: data.previous_value || '',
+      status: data.status || '',
+      severity: data.severity || '',
+      camera_id: data.camera_id || '',
+      zone_id: data.zone_id || '',
     };
 
-    await this.produceMessage(eventData, entity);
+    await this.produceMessage(eventData, eventId);
   }
 }
