@@ -10,22 +10,28 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   private isRunning = false;
 
   constructor(private readonly configService: ConfigService) {
-    const broker = this.configService.get<string>('kafka.broker');
-    const clientId = this.configService.get<string>('kafka.clientId');
+    const broker = this.configService.get<string>('kafka.broker') || 'localhost:9092';
+    const clientId = this.configService.get<string>('kafka.clientId') || 'vision-ops-consumer';
+    const connectionTimeout = this.configService.get<number>('kafka.connectionTimeout', 3000);
+    const requestTimeout = this.configService.get<number>('kafka.requestTimeout', 30000);
 
     this.kafka = new Kafka({
       clientId,
       brokers: broker.split(',').map((b) => b.trim()),
+      connectionTimeout,
+      requestTimeout,
+      logLevel: 2, // WARN level - reduces verbose error logs
     });
 
-    const groupId = this.configService.get<string>('kafka.groupId');
+    const groupId = this.configService.get<string>('kafka.groupId') || 'vision-ops-group';
     this.consumer = this.kafka.consumer({ groupId });
   }
 
   async onModuleInit() {
-    await this.connect();
-    await this.subscribe();
-    await this.consume();
+    // Connect in background, don't block application startup
+    this.connectWithRetry().catch((error) => {
+      this.logger.warn('Kafka consumer will retry connection in background', error.message);
+    });
   }
 
   async onModuleDestroy() {
@@ -36,15 +42,45 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     try {
       await this.consumer.connect();
       this.logger.log('Kafka consumer connected successfully');
+      return true;
     } catch (error) {
       this.logger.error('Failed to connect Kafka consumer', error);
-      throw error;
+      return false;
     }
+  }
+
+  private async connectWithRetry() {
+    const maxRetries = this.configService.get<number>('kafka.retry.retries', 5);
+    const initialRetryTime = this.configService.get<number>('kafka.retry.initialRetryTime', 100);
+    const multiplier = this.configService.get<number>('kafka.retry.multiplier', 2);
+
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      const connected = await this.connect();
+      if (connected) {
+        await this.subscribe();
+        await this.consume();
+        return;
+      }
+
+      if (attempt < maxRetries - 1) {
+        const retryTime = initialRetryTime * Math.pow(multiplier, attempt);
+        this.logger.warn(
+          `Kafka consumer connection failed. Retrying in ${retryTime}ms (attempt ${attempt + 1}/${maxRetries})`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, retryTime));
+      }
+    }
+
+    this.logger.error(
+      `Kafka consumer failed to connect after ${maxRetries} attempts. Will continue retrying in background.`,
+    );
+    // Continue retrying in background
+    setTimeout(() => this.connectWithRetry(), 10000);
   }
 
   private async subscribe() {
     try {
-      const topic = this.configService.get<string>('kafka.topics.cameraEvents');
+      const topic = this.configService.get<string>('kafka.topics.cameraEvents') || 'visionops.camera.events.v1';
       await this.consumer.subscribe({ topic, fromBeginning: false });
       this.logger.log(`Subscribed to topic: ${topic}`);
     } catch (error) {
@@ -95,13 +131,16 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
         }
       }
 
+      // Safely convert timestamp to ISO string
+      const timestampISO = this.safeTimestampToString(timestamp);
+
       // Log the message details
       this.logger.debug('Message details:', {
         topic,
         partition,
         offset,
         key: key ? key.toString() : null,
-        timestamp: timestamp ? new Date(timestamp).toISOString() : null,
+        timestamp: timestampISO,
         value: parsedData,
       });
 
@@ -111,7 +150,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
         partition,
         offset,
         key: key ? key.toString() : null,
-        timestamp: timestamp ? new Date(timestamp).toISOString() : null,
+        timestamp: timestampISO,
       });
     } catch (error) {
       this.logger.error('Error handling message', {
@@ -121,6 +160,49 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
         offset,
       });
       // In production, you might want to send failed messages to a DLQ (Dead Letter Queue)
+    }
+  }
+
+  /**
+   * Safely convert timestamp to ISO string
+   * Handles null, undefined, invalid dates, and string timestamps
+   */
+  private safeTimestampToString(timestamp: string | number | null | undefined): string | null {
+    if (!timestamp) {
+      return null;
+    }
+
+    try {
+      // If it's a number (milliseconds or seconds), convert to Date
+      if (typeof timestamp === 'number') {
+        // Kafka timestamps are usually in milliseconds, but check if it's seconds
+        const date = timestamp > 1e12 ? new Date(timestamp) : new Date(timestamp * 1000);
+        if (isNaN(date.getTime())) {
+          return null;
+        }
+        return date.toISOString();
+      }
+
+      // If it's a string, try to parse it
+      if (typeof timestamp === 'string') {
+        // If it's already an ISO string, return it
+        if (timestamp.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
+          return timestamp;
+        }
+        
+        // Try parsing as date
+        const date = new Date(timestamp);
+        if (isNaN(date.getTime())) {
+          // If parsing fails, return current timestamp
+          return new Date().toISOString();
+        }
+        return date.toISOString();
+      }
+
+      return null;
+    } catch (error) {
+      // If any error occurs, return current timestamp
+      return new Date().toISOString();
     }
   }
 
