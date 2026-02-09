@@ -1,6 +1,7 @@
-import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
+import { ElasticService } from '../elastic/elastic.service';
 
 @Injectable()
 export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
@@ -9,7 +10,11 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   private consumer: Consumer;
   private isRunning = false;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject(forwardRef(() => ElasticService))
+    private readonly elasticService: ElasticService,
+  ) {
     const broker = this.configService.get<string>('kafka.broker') || 'localhost:9092';
     const clientId = this.configService.get<string>('kafka.clientId') || 'vision-ops-consumer';
     const connectionTimeout = this.configService.get<number>('kafka.connectionTimeout', 3000);
@@ -221,16 +226,20 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
       metadata,
     });
 
-    // TODO: Implement your business logic here
-    // For example:
-    // - Store the event in a database
-    // - Trigger other services
-    // - Process the camera event data
-    // - Send notifications
-    // etc.
+    try {
+      // Store the event in Elasticsearch (only CSV data, no Kafka metadata)
+      await this.elasticService.indexDocument(data);
 
-    // Example: Log the processed event
-    this.logger.log(`Camera event processed successfully - Offset: ${metadata.offset}`);
+      this.logger.log(
+        `Camera event stored in Elasticsearch successfully - Event ID: ${data.event_id || 'N/A'}, Offset: ${metadata.offset}`,
+      );
+    } catch (error) {
+      this.logger.error(`Error storing event in Elasticsearch: ${error.message}`, {
+        event_id: data.event_id,
+        offset: metadata.offset,
+      });
+      // Don't throw - we want to continue processing even if Elasticsearch fails
+    }
   }
 
   private async disconnect() {

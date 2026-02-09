@@ -29,4 +29,11 @@ export default () => ({
       cameraEvents: process.env.KAFKA_TOPIC_CAMERA_EVENTS ?? 'visionops.camera.events.v1',
     },
   },
+  elasticsearch: {
+    node: process.env.ELASTICSEARCH_NODE ?? 'http://34.173.116.41:9200',
+    username: process.env.ELASTICSEARCH_USERNAME ?? 'elastic',
+    password: process.env.ELASTICSEARCH_PASSWORD ?? 'variphi@2024',
+    index: process.env.ELASTICSEARCH_INDEX ?? 'vision-ops-overview',
+    requestTimeout: parseInt(process.env.ELASTICSEARCH_REQUEST_TIMEOUT ?? '30000', 10),
+  },
 });
