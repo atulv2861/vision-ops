@@ -20,7 +20,7 @@ export interface GetAllOptions {
 export class OverviewService {
   private readonly logger = new Logger(OverviewService.name);
 
-  constructor(private readonly elasticService: ElasticService) {}
+  constructor(private readonly elasticService: ElasticService) { }
 
   /**
    * Get all events with pagination
@@ -46,8 +46,8 @@ export class OverviewService {
         },
       });
 
-      const total = typeof response.hits.total === 'object' 
-        ? response.hits.total.value 
+      const total = typeof response.hits.total === 'object'
+        ? response.hits.total.value
         : response.hits.total;
 
       return {
@@ -99,21 +99,21 @@ export class OverviewService {
       // Event type filter
       if (eventType) {
         mustClauses.push({
-          term: { event_type: eventType },
+          term: { 'event_type.keyword': eventType },
         });
       }
 
       // Severity filter
       if (severity) {
         mustClauses.push({
-          term: { severity: severity },
+          term: { 'severity.keyword': severity },
         });
       }
 
       // Zone ID filter
       if (zoneId) {
         mustClauses.push({
-          term: { zone_id: zoneId },
+          term: { 'zone_id.keyword': zoneId },
         });
       }
 
@@ -125,8 +125,8 @@ export class OverviewService {
         query: mustClauses.length > 0 ? { bool: { must: mustClauses } } : { match_all: {} },
       });
 
-      const total = typeof response.hits.total === 'object' 
-        ? response.hits.total.value 
+      const total = typeof response.hits.total === 'object'
+        ? response.hits.total.value
         : response.hits.total;
 
       return {
@@ -164,30 +164,30 @@ export class OverviewService {
         aggs: {
           total_events: {
             value_count: {
-              field: 'event_id',
+              field: 'event_id.keyword',
             },
           },
           by_event_type: {
             terms: {
-              field: 'event_type',
+              field: 'event_type.keyword',
               size: 20,
             },
           },
           by_severity: {
             terms: {
-              field: 'severity',
+              field: 'severity.keyword',
               size: 10,
             },
           },
           by_zone: {
             terms: {
-              field: 'zone_id',
+              field: 'zone_id.keyword',
               size: 20,
             },
           },
           by_status: {
             terms: {
-              field: 'status',
+              field: 'status.keyword',
               size: 10,
             },
           },

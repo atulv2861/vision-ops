@@ -3,7 +3,7 @@ import { OverviewService } from './overview.service';
 
 @Controller('overview')
 export class OverviewController {
-  constructor(private readonly overviewService: OverviewService) {}
+  constructor(private readonly overviewService: OverviewService) { }
 
   @Get()
   async getAll(
@@ -35,6 +35,11 @@ export class OverviewController {
       from: from ? parseInt(from.toString(), 10) : 0,
       size: size ? parseInt(size.toString(), 10) : 100,
     });
+  }
+
+  @Get('dashboard')
+  async getDashboard() {
+    return this.overviewService.getDashboardMetrics();
   }
 
   @Get('stats')
