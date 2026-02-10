@@ -66,4 +66,14 @@ export class OverviewController {
   async getAiPattern() {
     return this.overviewService.getAiPattern();
   }
+
+  @Get('camera-network-status')
+  async getCameraNetworkStatus() {
+    return this.overviewService.getCameraNetworkStatus();
+  }
+
+  @Get('campus-traffic')
+  async getCampusTraffic() {
+    return this.overviewService.getCampusTraffic();
+  }
 }
