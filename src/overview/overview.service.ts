@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Client } from '@elastic/elasticsearch';
 import { ElasticService } from '../../libs/common/src/elastic/elastic.service';
 
 export interface SearchOptions {
@@ -242,4 +243,71 @@ export class OverviewService {
       size: 1000,
     });
   }
-}
+
+    /**
+   * Get dashboard summary. Every request queries Elasticsearch (no caching),
+   * so values and counts update each time you hit the endpoint as new data is indexed.
+   */
+    async getSummary() {
+      try {
+        const client = this.elasticService.getClient();
+        const indexName = this.elasticService.getIndexName();
+        
+        const query: any = {
+          bool: {
+            must: [
+              { term: { event_type: 'metric_update' } }
+            ]
+          }
+        };
+    
+        const response: any = await client.search({
+          index: indexName,
+          //size: 0,  // This will return NO hits
+          query: query,
+          track_total_hits: true  // Important for accurate counts
+        });
+    
+        const data = response.hits.hits.map((hit: any) => hit._source);
+        
+        const num = (v: any) => (v === undefined || v === null ? 0 : Number(v));
+        const groupedData = data.reduce((acc: any, curr: any) => {
+          const key = curr.metric_name;
+          acc[key] = (acc[key] || 0) + num(curr.value);
+          return acc;
+        }, {});
+
+        const studentsSum = groupedData['Students on Campus'] ?? 0;
+        const staffPresentSum = groupedData['Staff Present'] ?? 0;
+        const activeEventsSum = groupedData['Active Events'] ?? 0;
+        const spaceUtilizationSum = groupedData['Space Utilization'] ?? 0;
+        const gateEntriesTodaySum = groupedData['Gate Entries Today'] ?? 0;
+        return {
+          'data':data.length,
+          'students on Campus': {
+            level: 'students on Campus',
+            value: studentsSum,
+          },
+          'staff present': {
+            level: 'staff present',
+            value: staffPresentSum,
+          },
+          'active events': {
+            level: 'active events',
+            value: activeEventsSum,
+          },
+          'space utilization': {
+            level: 'space utilization',
+            value: spaceUtilizationSum,
+          },
+          'gate entries today': {
+            level: 'gate entries today',
+            value: gateEntriesTodaySum,
+          },
+        };
+      } catch (error) {
+        this.logger.error('Error getting summary:', error);
+        throw error;
+      }
+    }
+  }

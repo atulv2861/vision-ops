@@ -39,7 +39,7 @@ export class OverviewController {
 
   @Get('dashboard')
   async getDashboard() {
-    return this.overviewService.getDashboardMetrics();
+    //return this.overviewService.getDashboardMetrics();
   }
 
   @Get('stats')
@@ -55,5 +55,10 @@ export class OverviewController {
   @Get('by-zone')
   async getByZone(@Query('zone_id') zoneId: string) {
     return this.overviewService.getByZone(zoneId);
+  }
+
+  @Get('summary')
+  async getSummary() {
+    return this.overviewService.getSummary();
   }
 }

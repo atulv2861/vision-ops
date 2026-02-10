@@ -2,30 +2,18 @@ event_id,timestamp,event_type,metric_name,location,value,increment,previous_valu
 EV0001,2026-02-09T12:43:05Z,metric_update,Students on Campus,campus-wide,369,8,361,active,null,null,ZONE_ALL
 EV00061,2026-02-09T12:43:05Z,metric_update,Students on Campus,campus-wide,369,8,361,active,null,null,ZONE_ALL
 EV00062,2026-02-09T12:43:05Z,metric_update,Students on Campus,campus-wide,369,8,361,active,null,null,ZONE_ALL
-
-
-
-
-
-
 EV0002,2026-02-09T12:43:10Z,gate_entry,Main Gate Entry,Main Gate,1450,1,1449,entry,LOW,CAM101,ZONE01
 EV0003,2026-02-09T12:43:10Z,event_detected,Running,Building A Corridor,1,1,0,detected,LOW,CAM201,ZONE02
 EV0004,2026-02-09T12:43:10Z,zone_activity,Zone Activity,ZONE01,89,2,87,active,null,null,ZONE01
 EV0005,2026-02-09T12:43:10Z,staff_movement,Staff Movement,Main Gate,1,1,0,patrolling,null,STF001,ZONE01
-
-
 EV00063,2026-02-09T12:43:05Z,metric_update,Students on Campus,campus-wide,369,8,361,active,null,null,ZONE_ALL
 EV00064,2026-02-09T12:43:05Z,metric_update,Students on Campus,campus-wide,369,8,361,active,null,null,ZONE_ALL
-
-
 EV0006,2026-02-09T12:43:15Z,metric_update,Staff Present,campus-wide,45,1,44,active,null,null,ZONE_ALL
 EV0007,2026-02-09T12:43:15Z,space_occupancy,Classroom A101,Classroom A101,29,2,27,over_capacity,HIGH,CAM203,ZONE02
 EV0008,2026-02-09T12:43:15Z,camera_health,Camera Health,CAM101,98,0,98,active,null,CAM101,ZONE01
 EV0009,2026-02-09T12:43:20Z,metric_update,Active Events,campus-wide,68,3,65,active,null,null,ZONE_ALL
-
 EV00065,2026-02-09T12:43:05Z,metric_update,Students on Campus,campus-wide,369,8,361,active,null,null,ZONE_ALL
 EV00066,2026-02-09T12:43:05Z,metric_update,Students on Campus,campus-wide,369,8,361,active,null,null,ZONE_ALL
-
 EV0010,2026-02-09T12:43:20Z,gate_entry,Building B Entry,Building B Entrance,230,1,229,entry,CRITICAL,CAM205,ZONE03
 EV0011,2026-02-09T12:43:20Z,alert_detected,No Security Guard,Building B Entrance,0,1,0,uncovered,CRITICAL,CAM205,ZONE03
 EV0012,2026-02-09T12:43:20Z,event_detected,Crowd Gathering,Main Cafeteria,8,8,0,detected,MEDIUM,CAM301,ZONE04

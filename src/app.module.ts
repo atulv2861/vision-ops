@@ -5,10 +5,8 @@ import { AppService } from './app.service';
 import { KafkaModule } from '../libs/common/src/kafka';
 import { OverviewModule } from './overview';
 
-import { SeederModule } from './seeder/seeder.module';
-
 @Module({
-  imports: [ConfigModule, KafkaModule, OverviewModule, SeederModule],
+  imports: [ConfigModule, KafkaModule, OverviewModule],
   controllers: [AppController],
   providers: [AppService],
 })
