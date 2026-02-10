@@ -26,11 +26,11 @@ async function bootstrap() {
   // app.useGlobalFilters(new DebugExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
 
-  const corsOrigin = configService.get<string[]>('cors.origin', []);
-  const corsCredentials = configService.get<boolean>('cors.credentials', false);
-  if (corsOrigin.length > 0) {
-    app.enableCors({ origin: corsOrigin, credentials: corsCredentials });
-  }
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   await app.listen(port);
 }

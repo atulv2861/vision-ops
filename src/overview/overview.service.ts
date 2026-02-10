@@ -227,21 +227,195 @@ export class OverviewService {
   /**
    * Get events by event type
    */
-  async getByEventType(eventType: string) {
-    return this.searchEvents({
-      eventType,
-      size: 1000,
-    });
+
+  // [
+  //   { type: 'Running', count: 28 },
+  //   { type: 'Crowd Gathering', count: 17 },
+  //   { type: 'Overcrowding', count: 11 },
+  //   { type: 'Loitering', count: 8 },
+  //   { type: 'Unauthorized Access', count: 5 },
+  // ]
+  async getEvents() {
+    try {
+      const client = this.elasticService.getClient();
+      const indexName = this.elasticService.getIndexName();
+
+      const query: any = {
+        bool: {
+          must: [
+            { term: { event_type: 'event_detected' } }
+          ]
+        }
+      };
+
+      const response: any = await client.search({
+        index: indexName,
+        size: 1000, // Get more data to aggregate
+        query: query,
+        sort: [{ timestamp: { order: 'desc' } }]
+      });
+
+      // Aggregate data on client side
+      const titleMap = new Map();
+
+      response.hits.hits.forEach((hit: any) => {
+        const type = hit._source?.metric_name || 'Unknown';
+        const count = hit._source?.increment || 0;
+
+        if (titleMap.has(type)) {
+          // Add to existing count
+          titleMap.set(type, parseInt(titleMap.get(type)) + parseInt(count));
+        } else {
+          // Create new entry
+          titleMap.set(type, count);
+        }
+      });
+
+      // Convert Map to array of objects
+      const patterns = Array.from(titleMap.entries()).map(([type, totalCount], index) => ({
+        id: `group-${index}`, // Generate a unique ID
+        type: type,
+        count: totalCount
+      }));
+
+      // Sort by count (highest first) or alphabetically
+      patterns.sort((a, b) => b.count - a.count);
+
+      return patterns;
+
+    } catch (error) {
+      this.logger.error('Error getting events:', error);
+      return [];
+    }
+  }
+
+  async getByEventType() {
+    try {
+      const client = this.elasticService.getClient();
+      const indexName = this.elasticService.getIndexName();
+
+      const response: any = await client.search({
+        index: indexName,
+        size: 0, // No documents, only aggregations
+        query: {
+          bool: {
+            must: [
+              { term: { event_type: 'event_detected' } }
+            ]
+          }
+        },
+        aggs: {
+          unique_titles: {
+            terms: {
+              field: 'metric_name.keyword', // Use .keyword for exact match
+              size: 100 // Number of unique titles to return
+            },
+            aggs: {
+              total_count: {
+                sum: {
+                  field: 'increment',
+                  missing: 0 // Treat missing increment as 0
+                }
+              },
+              latest_event: {
+                top_hits: {
+                  size: 1,
+                  sort: [{ timestamp: { order: 'desc' } }],
+                  _source: ['timestamp', 'location'] // Get additional fields if needed
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Transform aggregation results
+      const buckets = response.aggregations?.unique_titles?.buckets || [];
+
+      const patterns = buckets.map((bucket: any, index: number) => {
+        const latest = bucket.latest_event.hits.hits[0]?._source;
+
+        return {
+          id: bucket.key, // Use title as ID or generate one
+          title: bucket.key,
+          count: bucket.total_count.value || 0,
+          // Additional info from latest event
+          lastUpdated: latest?.timestamp,
+          location: latest?.location
+        };
+      });
+
+      // Already sorted by Elasticsearch (by count descending)
+      return patterns;
+
+    } catch (error) {
+      this.logger.error('Error getting events:', error);
+      return [];
+    }
   }
 
   /**
    * Get events by zone
    */
-  async getByZone(zoneId: string) {
-    return this.searchEvents({
-      zoneId,
-      size: 1000,
-    });
+  // [
+  //   { zone: 'Building A', score: 93 },
+  //   { zone: 'Building B', score: 88 },
+  //   { zone: 'Cafeteria', score: 91 },
+  //   { zone: 'Library', score: 96 },
+  //   { zone: 'Sports Complex', score: 85 },
+  // ]
+  async getByZone() {
+    try {
+      const client = this.elasticService.getClient();
+      const indexName = this.elasticService.getIndexName();
+
+      const query: any = {
+        bool: {
+          must: [
+            { term: { event_type: 'zone_activity' } }
+          ]
+        }
+      };
+
+      const response: any = await client.search({
+        index: indexName,
+        size: 1000, // Get more data to aggregate
+        query: query,
+        // sort: [{ timestamp: { order: 'desc' } }]
+      });
+
+      // Aggregate data on client side
+      const titleMap = new Map();
+
+      response.hits.hits.forEach((hit: any) => {
+        const zone = hit._source?.location || 'Unknown';
+        const score = hit._source?.value || 0;
+
+        if (titleMap.has(zone)) {
+          // Add to existing count
+          titleMap.set(zone, parseInt(titleMap.get(zone)) + parseInt(score));
+        } else {
+          // Create new entry
+          titleMap.set(zone, score);
+        }
+      });
+
+      // Convert Map to array of objects
+      const patterns = Array.from(titleMap.entries()).map(([zone, totalScore], index) => ({
+        id: `group-${index}`, // Generate a unique ID
+        zone: zone,
+        score: totalScore
+      }));
+
+      // Sort by count (highest first) or alphabetically
+      //patterns.sort((a, b) => b.score - a.score);
+
+      return patterns;
+
+    } catch (error) {
+      this.logger.error('Error getting events:', error);
+      return [];
+    }
   }
 
   /**
@@ -284,23 +458,23 @@ export class OverviewService {
       return {
         //'data':data.length,
         'students on Campus': {
-          level: 'students on Campus',
+          title: 'students on Campus',
           value: studentsSum,
         },
         'staff present': {
-          level: 'staff present',
+          title: 'staff present',
           value: staffPresentSum,
         },
         'active events': {
-          level: 'active events',
+          title: 'active events',
           value: activeEventsSum,
         },
         'space utilization': {
-          level: 'space utilization',
-          value: spaceUtilizationSum,
+          title: 'space utilization',
+          value: `${(spaceUtilizationSum / (spaceUtilizationSum < 1000 ? 100 : 1000)).toFixed(2)}%`,
         },
         'gate entries today': {
-          level: 'gate entries today',
+          title: 'gate entries today',
           value: gateEntriesTodaySum,
         },
       };
@@ -310,185 +484,121 @@ export class OverviewService {
     }
   }
 
-  /*
-   * Ingest overview data from CSV
-   */
-  async ingestOverviewData(fileBuffer: Buffer) {
-    try {
-      const client = this.elasticService.getClient();
-      const indexName = this.elasticService.getIndexName(); // Or use 'events-data' if that's the shared index
-
-      // ensure index exists with correct mapping
-      const exists = await client.indices.exists({ index: indexName });
-      if (!exists) {
-        await client.indices.create({
-          index: indexName,
-          mappings: {
-            properties: {
-              event_id: { type: 'keyword' },
-              event_type: { type: 'keyword' },
-              timestamp: { type: 'date' },
-              metric_name: { type: 'keyword' },
-              value: { type: 'integer' },
-              increment: { type: 'integer' },
-              previous_value: { type: 'integer' },
-              zone_id: { type: 'keyword' },
-              location: { type: 'keyword' },
-              camera_id: { type: 'keyword' },
-              status: { type: 'keyword' },
-              severity: { type: 'keyword' }
-            }
-          }
-        });
-      }
-
-      const lines = fileBuffer.toString('utf-8').split('\n').filter(line => line.trim() !== '');
-      if (lines.length === 0) return { message: 'Empty CSV' };
-
-      const headers = lines[0].split(',').map(h => h.trim());
-      const documents: any[] = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',').map(v => v.trim());
-        if (values.length !== headers.length) continue;
-
-        const doc: any = {};
-        headers.forEach((header, index) => {
-          let value: any = values[index];
-          if (value === 'null') {
-            value = null;
-          } else if (['value', 'increment', 'previous_value'].includes(header)) {
-            const num = Number(value);
-            if (!isNaN(num)) value = num;
-          }
-          doc[header] = value;
-        });
-
-        // Add timestamp if missing or valid
-        if (!doc.timestamp) doc.timestamp = new Date().toISOString();
-
-        documents.push(doc);
-      }
-
-      if (documents.length === 0) return { message: 'No valid documents found' };
-
-      const body = documents.flatMap(doc => [
-        { index: { _index: indexName, _id: doc.event_id } },
-        doc
-      ]);
-
-      const response = await client.bulk({ body, refresh: 'wait_for' });
-
-      if (response.errors) {
-        const erroredDocuments: any[] = [];
-        response.items.forEach((action: any, i: number) => {
-          const operation = Object.keys(action)[0];
-          if (action[operation].error) {
-            erroredDocuments.push({
-              status: action[operation].status,
-              error: action[operation].error,
-              doc: documents[i]
-            });
-          }
-        });
-        this.logger.error('Bulk ingest errors', erroredDocuments);
-      }
-
-      return { message: `Processed ${documents.length} records`, errors: response.errors };
-
-    } catch (error) {
-      this.logger.error('Error ingesting overview data:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get Space Utilization (Top 5 spaces by occupancy %)
-   */
-  async getSpaceUtilization() {
+  async getAiPattern() {
     try {
       const client = this.elasticService.getClient();
       const indexName = this.elasticService.getIndexName();
 
-      // Defined capacities for known spaces
-      const SPACE_CAPACITIES: Record<string, number> = {
-        'Classroom A101': 30,
-        'Classroom A102': 30,
-        'Main Cafeteria': 200,
-        'Library Reading Area': 60,
-        'Building A Main Corridor': 80, // CSV uses this name
-        'Building A - Main Corridor': 80, // Alias just in case
-        'Building B Corridor': 100,
-        'Sports Complex': 200,
-        'Main Gate': 50
+      const query: any = {
+        bool: {
+          must: [
+            { term: { event_type: 'ai_pattern' } }
+          ]
+        }
       };
 
-      // Space types mapping
-      const SPACE_TYPES: Record<string, string> = {
-        'Classroom A101': 'classroom',
-        'Classroom A102': 'classroom',
-        'Main Cafeteria': 'cafeteria',
-        'Library Reading Area': 'library',
-        'Building A Main Corridor': 'corridor',
-        'Building A - Main Corridor': 'corridor'
-      };
-
-      // Default capacity if unknown
-      const DEFAULT_CAPACITY = 50;
-
-      // Aggregation to get the LATEST space_occupancy event for each location
-      const response = await client.search({
+      const response: any = await client.search({
         index: indexName,
-        size: 0,
-        query: {
-          term: { 'event_type.keyword': 'space_occupancy' }
-        },
-        aggs: {
-          by_location: {
-            terms: {
-              field: 'location.keyword',
-              size: 100 // Get all locations
-            },
-            aggs: {
-              latest_record: {
-                top_hits: {
-                  size: 1,
-                  sort: [{ timestamp: { order: 'desc' } }]
-                }
+        size: 3,
+        query: query,
+      });
+      // Transform data more efficiently and keep only unique locations
+      const patterns = response.hits.hits.map((hit: any) => ({
+        id: hit._id, // Include document ID for reference
+        title: hit._source?.location || 'Unknown',
+        severity: hit._source?.severity || 'unknown',
+        camera: hit._source?.camera || 'N/A',
+        zone: hit._source?.zone || 'Unassigned',
+        timestamp: hit._source?.timestamp
+      }));
+      return patterns;
+    } catch (error) {
+      this.logger.error('Error getting ai pattern:', error);
+      throw error;
+    }
+  }
+
+  async getSpaceUtilization() {
+    // Defined capacities for known spaces
+    const SPACE_CAPACITIES: Record<string, number> = {
+      'Classroom A101': 30,
+      'Classroom A102': 30,
+      'Main Cafeteria': 200,
+      'Library Reading Area': 60,
+      'Building A Main Corridor': 80, // CSV uses this name
+      'Building A - Main Corridor': 80, // Alias just in case
+      'Building B Corridor': 100,
+      'Sports Complex': 200,
+      'Main Gate': 50
+    };
+
+    // Space types mapping
+    const SPACE_TYPES: Record<string, string> = {
+      'Classroom A101': 'classroom',
+      'Classroom A102': 'classroom',
+      'Main Cafeteria': 'cafeteria',
+      'Library Reading Area': 'library',
+      'Building A Main Corridor': 'corridor',
+      'Building A - Main Corridor': 'corridor'
+    };
+
+    // Default capacity if unknown
+    const DEFAULT_CAPACITY = 50;
+    const client = this.elasticService.getClient();
+    const indexName = this.elasticService.getIndexName();
+    // Aggregation to get the LATEST space_occupancy event for each location
+    const response = await client.search({
+      index: indexName,
+      size: 0,
+      query: {
+        term: { 'event_type.keyword': 'space_occupancy' }
+      },
+      aggs: {
+        by_location: {
+          terms: {
+            field: 'location.keyword',
+            size: 100 // Get all locations
+          },
+          aggs: {
+            latest_record: {
+              top_hits: {
+                size: 1,
+                sort: [{ timestamp: { order: 'desc' } }]
               }
             }
           }
         }
-      });
+      }
+    });
 
-      const buckets = (response.aggregations?.by_location as any)?.buckets || [];
+    const buckets = (response.aggregations?.by_location as any)?.buckets || [];
 
-      const utilizationData = buckets.map((bucket: any) => {
-        const location = bucket.key;
-        const hit = bucket.latest_record.hits.hits[0]._source;
-        const currentOccupancy = Number(hit.value) || 0;
-        const capacity = SPACE_CAPACITIES[location] || DEFAULT_CAPACITY;
-        const utilizationPercentage = Math.round((currentOccupancy / capacity) * 100);
-        const spaceType = SPACE_TYPES[location] || 'area';
+    const utilizationData = buckets.map((bucket: any) => {
+      const location = bucket.key;
+      const hit = bucket.latest_record.hits.hits[0]._source;
+      const currentOccupancy = Number(hit.value) || 0;
+      const capacity = SPACE_CAPACITIES[location] || DEFAULT_CAPACITY;
+      const utilizationPercentage = Math.round((currentOccupancy / capacity) * 100);
+      const spaceType = SPACE_TYPES[location] || 'area';
 
-        return {
-          id: location,
-          name: location,
-          type: spaceType,
-          occupancy: currentOccupancy,
-          capacity: capacity,
-          percentage: utilizationPercentage
-        };
-      });
+      return {
+        id: location,
+        name: location,
+        type: spaceType,
+        occupancy: currentOccupancy,
+        capacity: capacity,
+        percentage: utilizationPercentage
+      };
+    });
 
-      // Sort by percentage descending and take top 5
-      return utilizationData
-        .sort((a: any, b: any) => b.percentage - a.percentage)
-        .slice(0, 5);
+    // Sort by percentage descending and take top 5
+    return utilizationData
+      .sort((a: any, b: any) => b.percentage - a.percentage)
+      .slice(0, 5);
 
-    } catch (error) {
-      this.logger.error('Error getting space utilization:', error);
-      throw error;
-    }
+  } catch(error: any) {
+    this.logger.error('Error getting space utilization:', error);
   }
+
+
 }

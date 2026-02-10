@@ -48,14 +48,14 @@ export class OverviewController {
     return this.overviewService.getStats();
   }
 
-  @Get('by-event-type')
-  async getByEventType(@Query('event_type') eventType: string) {
-    return this.overviewService.getByEventType(eventType);
+  @Get('events-by-type')
+  async getEvents() {
+    return this.overviewService.getEvents();
   }
 
-  @Get('by-zone')
-  async getByZone(@Query('zone_id') zoneId: string) {
-    return this.overviewService.getByZone(zoneId);
+  @Get('cleaning-compliance')
+  async getByZone() {
+    return this.overviewService.getByZone();
   }
 
   @Get('summary')
@@ -63,11 +63,9 @@ export class OverviewController {
     return this.overviewService.getSummary();
   }
 
-  @Post('ingest')
-  @UseInterceptors(FileInterceptor('file'))
-  async ingestEvents(@UploadedFile() file: any) { // Using 'any' for simplicity or strictly type if Express types avail
-    if (!file) return { message: 'No file uploaded' };
-    return this.overviewService.ingestOverviewData(file.buffer);
+  @Get('ai-patterns')
+  async getAiPattern() {
+    return this.overviewService.getAiPattern();
   }
 
   @Get('space-utilization')
