@@ -263,9 +263,8 @@ export class OverviewService {
     
         const response: any = await client.search({
           index: indexName,
-          //size: 0,  // This will return NO hits
-          query: query,
-          track_total_hits: true  // Important for accurate counts
+          size: 1000,  // This will return NO hits
+          query: query
         });
     
         const data = response.hits.hits.map((hit: any) => hit._source);
@@ -283,7 +282,7 @@ export class OverviewService {
         const spaceUtilizationSum = groupedData['Space Utilization'] ?? 0;
         const gateEntriesTodaySum = groupedData['Gate Entries Today'] ?? 0;
         return {
-          'data':data.length,
+          //'data':data.length,
           'students on Campus': {
             level: 'students on Campus',
             value: studentsSum,
