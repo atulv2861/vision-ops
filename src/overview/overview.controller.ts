@@ -72,4 +72,9 @@ export class OverviewController {
   async getSpaceUtilization() {
     return this.overviewService.getSpaceUtilization();
   }
+
+  @Get('gate-coverage')
+  async getGateCoverage() {
+    return this.overviewService.getGateSecurityStatus();
+  }
 }

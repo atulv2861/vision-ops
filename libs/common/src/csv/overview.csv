@@ -71,3 +71,9 @@ EV0068,2026-02-09T12:44:50Z,ai_detected,Unauthorized Access,Building B Entrance,
 EV0069,2026-02-09T12:43:25Z,ai_detected,Unauthorized Access,Corridor A Main,1,1,0,detected,HIGH,CAM101,ZONE0
 
 
+
+EV0070,2026-02-09T12:45:25Z,guards_on_duty,Guards on Duty,Main Gate,2,0,2,,null,null,ZONE01
+EV0071,2026-02-09T12:45:25Z,guards_on_duty,Guards on Duty,Building A Entrance,1,0,1,,null,null,ZONE02
+EV0072,2026-02-09T12:45:25Z,guards_on_duty,Guards on Duty,Building B Entrance,0,0,1,,null,null,ZONE03
+EV0073,2026-02-09T12:45:25Z,guards_on_duty,Guards on Duty,Cafeteria Entrance,1,0,1,,null,null,ZONE04
+EV0074,2026-02-09T12:45:25Z,guards_on_duty,Guards on Duty,Sports Complex Entrance,1,0,1,,null,null,ZONE06

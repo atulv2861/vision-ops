@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Client } from '@elastic/elasticsearch';
 import { ElasticService } from '../../libs/common/src/elastic/elastic.service';
+import * as fs from 'fs';
+import * as path from 'path';
+import csv from 'csv-parser';
+import { OnModuleInit } from '@nestjs/common';
 
 export interface SearchOptions {
   query?: string;
@@ -18,10 +22,131 @@ export interface GetAllOptions {
 }
 
 @Injectable()
-export class OverviewService {
+export class OverviewService implements OnModuleInit {
   private readonly logger = new Logger(OverviewService.name);
 
   constructor(private readonly elasticService: ElasticService) { }
+
+  async onModuleInit() {
+    await this.ingestGateData();
+  }
+
+  async ingestGateData() {
+    const client = this.elasticService.getClient();
+    const indexName = 'gate-compliance';
+
+    try {
+      const exists = await client.indices.exists({ index: indexName });
+      if (!exists) {
+        await client.indices.create({
+          index: indexName,
+          mappings: {
+            properties: {
+              gate_name: { type: 'keyword' },
+              guards_present: { type: 'integer' },
+              timestamp: { type: 'date' }
+            }
+          }
+        });
+        this.logger.log(`Created index ${indexName}`);
+      }
+
+      // Read CSV
+      const csvPath = path.join(process.cwd(), 'libs/common/src/csv/overview.csv');
+      const results: any[] = [];
+
+      if (fs.existsSync(csvPath)) {
+        await new Promise<void>((resolve, reject) => {
+          fs.createReadStream(csvPath)
+            .pipe(csv())
+            .on('data', (data: any) => {
+              // simple validation
+              if (data.event_type === 'guards_on_duty' && data.location && data.value !== undefined) {
+                results.push({
+                  gate_name: data.location,
+                  guards_present: parseInt(data.value, 10),
+                  timestamp: data.timestamp
+                });
+              }
+            })
+            .on('end', resolve)
+            .on('error', reject);
+        });
+
+        if (results.length > 0) {
+          const body = results.flatMap(doc => [
+            { index: { _index: indexName, _id: doc.gate_name } },
+            doc
+          ]);
+
+          await client.bulk({ body, refresh: true });
+          this.logger.log(`Ingested ${results.length} gate records`);
+        }
+      } else {
+        this.logger.warn(`Gate CSV not found at ${csvPath}`);
+      }
+    } catch (error) {
+      this.logger.error('Error ingesting gate data:', error);
+    }
+  }
+
+  async getGateSecurityStatus() {
+    const client = this.elasticService.getClient();
+    const indexName = 'gate-compliance';
+    const STATIC_GUARD_CONFIG: Record<string, number> = {
+      "Main Gate": 2,
+      "Building A Entrance": 1,
+      "Building B Entrance": 1,
+      "Cafeteria Entrance": 2,
+      "Sports Complex Entrance": 1
+    };
+
+    try {
+      // Get latest status for each gate
+      const response = await client.search({
+        index: indexName,
+        size: 0,
+        aggs: {
+          gates: {
+            terms: { field: 'gate_name', size: 50 },
+            aggs: {
+              latest: {
+                top_hits: {
+                  size: 1,
+                  sort: [{ timestamp: { order: 'desc' } }]
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const buckets = (response.aggregations?.gates as any)?.buckets || [];
+      const gateData = buckets.map((bucket: any) => {
+        const hit = bucket.latest.hits.hits[0]._source;
+        const name = bucket.key;
+        const guardsPresent = hit.guards_present;
+        const guardsNeeded = STATIC_GUARD_CONFIG[name] || 1; // Default requirement
+
+        let status = 'covered';
+        if (guardsPresent === 0) status = 'uncovered';
+        else if (guardsPresent < guardsNeeded) status = 'low-coverage';
+
+        return {
+          name,
+          guardsPresent,
+          guardsNeeded,
+          status
+        };
+      });
+
+      return gateData;
+
+    } catch (error) {
+      this.logger.error('Error getting gate security status:', error);
+      return [];
+    }
+  }
 
   /**
    * Get all events with pagination
