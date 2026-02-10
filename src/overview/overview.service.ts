@@ -357,11 +357,65 @@ export class OverviewService {
   /**
    * Get events by zone
    */
-  async getByZone(zoneId: string) {
-    return this.searchEvents({
-      zoneId,
-      size: 1000,
-    });
+  // [
+  //   { zone: 'Building A', score: 93 },
+  //   { zone: 'Building B', score: 88 },
+  //   { zone: 'Cafeteria', score: 91 },
+  //   { zone: 'Library', score: 96 },
+  //   { zone: 'Sports Complex', score: 85 },
+  // ]
+  async getByZone() {
+    try {
+      const client = this.elasticService.getClient();
+      const indexName = this.elasticService.getIndexName();
+  
+      const query: any = {
+        bool: {
+          must: [
+            { term: { event_type: 'zone_activity' } }
+          ]
+        }
+      };
+  
+      const response: any = await client.search({
+        index: indexName,
+        size: 1000, // Get more data to aggregate
+        query: query,
+        // sort: [{ timestamp: { order: 'desc' } }]
+      });
+  
+      // Aggregate data on client side
+      const titleMap = new Map();
+      
+      response.hits.hits.forEach((hit: any) => {
+        const zone = hit._source?.location || 'Unknown';
+        const score = hit._source?.value || 0;
+        
+        if (titleMap.has(zone)) {
+          // Add to existing count
+          titleMap.set(zone, parseInt(titleMap.get(zone)) + parseInt(score));
+        } else {
+          // Create new entry
+          titleMap.set(zone, score);
+        }
+      });
+  
+      // Convert Map to array of objects
+      const patterns = Array.from(titleMap.entries()).map(([zone, totalScore], index) => ({
+        id: `group-${index}`, // Generate a unique ID
+        zone: zone,
+        score: totalScore
+      }));
+  
+      // Sort by count (highest first) or alphabetically
+      //patterns.sort((a, b) => b.score - a.score);
+  
+      return patterns;
+  
+    } catch (error) {
+      this.logger.error('Error getting events:', error);
+      return [];
+    }
   }
 
   /**

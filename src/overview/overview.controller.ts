@@ -52,9 +52,9 @@ export class OverviewController {
     return this.overviewService.getEvents();
   }
 
-  @Get('by-zone')
-  async getByZone(@Query('zone_id') zoneId: string) {
-    return this.overviewService.getByZone(zoneId);
+  @Get('cleaning-compliance')
+  async getByZone() {
+    return this.overviewService.getByZone();
   }
 
   @Get('summary')
