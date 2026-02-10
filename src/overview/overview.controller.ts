@@ -47,9 +47,9 @@ export class OverviewController {
     return this.overviewService.getStats();
   }
 
-  @Get('by-event-type')
-  async getByEventType(@Query('event_type') eventType: string) {
-    return this.overviewService.getByEventType(eventType);
+  @Get('events-by-type')
+  async getEvents() {
+    return this.overviewService.getEvents();
   }
 
   @Get('by-zone')
@@ -60,5 +60,10 @@ export class OverviewController {
   @Get('summary')
   async getSummary() {
     return this.overviewService.getSummary();
+  }
+
+  @Get('ai-patterns')
+  async getAiPattern() {
+    return this.overviewService.getAiPattern();
   }
 }
