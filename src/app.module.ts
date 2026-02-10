@@ -4,9 +4,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { KafkaModule } from '../libs/common/src/kafka';
 import { OverviewModule } from './overview';
+import { EventsModule } from './events/events.module';
 
 @Module({
-  imports: [ConfigModule, KafkaModule, OverviewModule],
+  imports: [ConfigModule, KafkaModule, OverviewModule, EventsModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,5 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { OverviewService } from './overview.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('overview')
 export class OverviewController {
@@ -60,5 +61,17 @@ export class OverviewController {
   @Get('summary')
   async getSummary() {
     return this.overviewService.getSummary();
+  }
+
+  @Post('ingest')
+  @UseInterceptors(FileInterceptor('file'))
+  async ingestEvents(@UploadedFile() file: any) { // Using 'any' for simplicity or strictly type if Express types avail
+    if (!file) return { message: 'No file uploaded' };
+    return this.overviewService.ingestOverviewData(file.buffer);
+  }
+
+  @Get('space-utilization')
+  async getSpaceUtilization() {
+    return this.overviewService.getSpaceUtilization();
   }
 }
