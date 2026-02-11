@@ -1,5 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { OverviewService } from './overview.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('overview')
 export class OverviewController {
@@ -76,4 +77,10 @@ export class OverviewController {
   async getCampusTraffic() {
     return this.overviewService.getCampusTraffic();
   }
+
+  @Get('space-utilization')
+  async getSpaceUtilization() {
+    return this.overviewService.getSpaceUtilization();
+  }
+
 }

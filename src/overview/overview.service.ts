@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Client } from '@elastic/elasticsearch';
 import { ElasticService } from '../../libs/common/src/elastic/elastic.service';
 
 export interface SearchOptions {
@@ -689,4 +688,88 @@ export class OverviewService {
       return [];
     }
   }
+
+  async getSpaceUtilization() {
+    // Defined capacities for known spaces
+    const SPACE_CAPACITIES: Record<string, number> = {
+      'Classroom A101': 30,
+      'Classroom A102': 30,
+      'Main Cafeteria': 200,
+      'Library Reading Area': 60,
+      'Building A Main Corridor': 80, // CSV uses this name
+      'Building A - Main Corridor': 80, // Alias just in case
+      'Building B Corridor': 100,
+      'Sports Complex': 200,
+      'Main Gate': 50
+    };
+
+    // Space types mapping
+    const SPACE_TYPES: Record<string, string> = {
+      'Classroom A101': 'classroom',
+      'Classroom A102': 'classroom',
+      'Main Cafeteria': 'cafeteria',
+      'Library Reading Area': 'library',
+      'Building A Main Corridor': 'corridor',
+      'Building A - Main Corridor': 'corridor'
+    };
+
+    // Default capacity if unknown
+    const DEFAULT_CAPACITY = 50;
+    const client = this.elasticService.getClient();
+    const indexName = this.elasticService.getIndexName();
+    // Aggregation to get the LATEST space_occupancy event for each location
+    const response = await client.search({
+      index: indexName,
+      size: 0,
+      query: {
+        term: { 'event_type.keyword': 'space_occupancy' }
+      },
+      aggs: {
+        by_location: {
+          terms: {
+            field: 'location.keyword',
+            size: 100 // Get all locations
+          },
+          aggs: {
+            latest_record: {
+              top_hits: {
+                size: 1,
+                sort: [{ timestamp: { order: 'desc' } }]
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const buckets = (response.aggregations?.by_location as any)?.buckets || [];
+
+    const utilizationData = buckets.map((bucket: any) => {
+      const location = bucket.key;
+      const hit = bucket.latest_record.hits.hits[0]._source;
+      const currentOccupancy = Number(hit.value) || 0;
+      const capacity = SPACE_CAPACITIES[location] || DEFAULT_CAPACITY;
+      const utilizationPercentage = Math.round((currentOccupancy / capacity) * 100);
+      const spaceType = SPACE_TYPES[location] || 'area';
+
+      return {
+        id: location,
+        name: location,
+        type: spaceType,
+        occupancy: currentOccupancy,
+        capacity: capacity,
+        percentage: utilizationPercentage
+      };
+    });
+
+    // Sort by percentage descending and take top 5
+    return utilizationData
+      .sort((a: any, b: any) => b.percentage - a.percentage)
+      .slice(0, 5);
+
+  } catch(error: any) {
+    this.logger.error('Error getting space utilization:', error);
+  }
+
+
 }
