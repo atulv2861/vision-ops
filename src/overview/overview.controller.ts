@@ -1,9 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { OverviewService } from './overview.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('overview')
 export class OverviewController {
-  constructor(private readonly overviewService: OverviewService) {}
+  constructor(private readonly overviewService: OverviewService) { }
 
   @Get()
   async getAll(
@@ -37,18 +38,49 @@ export class OverviewController {
     });
   }
 
+  @Get('dashboard')
+  async getDashboard() {
+    //return this.overviewService.getDashboardMetrics();
+  }
+
   @Get('stats')
   async getStats() {
     return this.overviewService.getStats();
   }
 
-  @Get('by-event-type')
-  async getByEventType(@Query('event_type') eventType: string) {
-    return this.overviewService.getByEventType(eventType);
+  @Get('events-by-type')
+  async getEvents() {
+    return this.overviewService.getEvents();
   }
 
-  @Get('by-zone')
-  async getByZone(@Query('zone_id') zoneId: string) {
-    return this.overviewService.getByZone(zoneId);
+  @Get('cleaning-compliance')
+  async getByZone() {
+    return this.overviewService.getByZone();
   }
+
+  @Get('summary')
+  async getSummary() {
+    return this.overviewService.getSummary();
+  }
+
+  @Get('ai-patterns')
+  async getAiPattern() {
+    return this.overviewService.getAiPattern();
+  }
+
+  @Get('camera-network-status')
+  async getCameraNetworkStatus() {
+    return this.overviewService.getCameraNetworkStatus();
+  }
+
+  @Get('campus-traffic')
+  async getCampusTraffic() {
+    return this.overviewService.getCampusTraffic();
+  }
+
+  @Get('space-utilization')
+  async getSpaceUtilization() {
+    return this.overviewService.getSpaceUtilization();
+  }
+
 }
