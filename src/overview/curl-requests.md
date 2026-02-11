@@ -116,3 +116,13 @@ curl.exe -X POST "http://localhost:3000/api/overview/ingest" -F "file=@libs/comm
 # Get Space Utilization
 Invoke-RestMethod -Uri "http://localhost:3000/api/overview/space-utilization" -Method Get
 ```
+
+## 8. Cameras API
+
+```bash
+# Get all cameras
+curl -s http://localhost:3000/api/cameras
+
+# Get camera metrics (aggregator)
+curl -s http://localhost:3000/api/cameras/metrics
+```
