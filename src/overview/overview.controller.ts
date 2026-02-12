@@ -83,4 +83,8 @@ export class OverviewController {
     return this.overviewService.getSpaceUtilization();
   }
 
+  @Get('security-access')
+  async getSecurityAccess() {
+    return this.overviewService.getGateSecurityStatus();
+  }
 }

@@ -771,5 +771,62 @@ export class OverviewService {
     this.logger.error('Error getting space utilization:', error);
   }
 
+  async getGateSecurityStatus() {
+    const client = this.elasticService.getClient();
+    const indexName = 'gate-compliance';
+    const STATIC_GUARD_CONFIG: Record<string, number> = {
+      "Main Gate": 2,
+      "Building A Entrance": 1,
+      "Building B Entrance": 1,
+      "Cafeteria Entrance": 2,
+      "Sports Complex Entrance": 1
+    };
+
+    try {
+      // Get latest status for each gate
+      const response = await client.search({
+        index: indexName,
+        size: 0,
+        aggs: {
+          gates: {
+            terms: { field: 'gate_name', size: 50 },
+            aggs: {
+              latest: {
+                top_hits: {
+                  size: 1,
+                  sort: [{ timestamp: { order: 'desc' } }]
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const buckets = (response.aggregations?.gates as any)?.buckets || [];
+      const gateData = buckets.map((bucket: any) => {
+        const hit = bucket.latest.hits.hits[0]._source;
+        const name = bucket.key;
+        const guardsPresent = hit.guards_present;
+        const guardsNeeded = STATIC_GUARD_CONFIG[name] || 1; // Default requirement
+
+        let status = 'covered';
+        if (guardsPresent === 0) status = 'uncovered';
+        else if (guardsPresent < guardsNeeded) status = 'low-coverage';
+
+        return {
+          name,
+          guardsPresent,
+          guardsNeeded,
+          status
+        };
+      });
+
+      return gateData;
+
+    } catch (error) {
+      this.logger.error('Error getting gate security status:', error);
+      return [];
+    }
+  }
 
 }
