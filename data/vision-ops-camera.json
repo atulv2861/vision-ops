@@ -1,0 +1,882 @@
+[
+  {
+    "client_id": "c5a7e9b1-3d4f-4a8e-9c2b-6f7d3e1a8b5c",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440000",
+    "timestamp": "2026-02-12 08:00:00",
+    "location": "Main Campus",
+    "location_id": "a1e4b8c3-5d2f-4a7e-9b1c-6f8d3e2a7b5c",
+    "occupancy_capacity": 25,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "7208977664", "person_type": "maintenance", "dwell_time": 114},
+      {"person_id": "2389159733", "person_type": "contractor", "dwell_time": 98},
+      {"person_id": "4263705055", "person_type": "staff", "dwell_time": 14},
+      {"person_id": "2294745811", "person_type": "security_guard", "dwell_time": 97},
+      {"person_id": "9988776655", "person_type": "faculty", "dwell_time": 53},
+      {"person_id": "1122334455", "person_type": "student", "dwell_time": 76}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "d6b8f0c2-4e5g-5b9f-0d3c-7g8e4f2b9c6d",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440001",
+    "timestamp": "2026-02-12 08:15:00",
+    "location": "CFET Area",
+    "location_id": "b2f5c9d4-6e3g-5b8f-0c2d-7g9e4f3b8c6d",
+    "occupancy_capacity": 30,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "2233445566", "person_type": "faculty", "dwell_time": 120},
+      {"person_id": "3344556677", "person_type": "staff", "dwell_time": 32},
+      {"person_id": "5566778899", "person_type": "maintenance", "dwell_time": 67},
+      {"person_id": "6677889900", "person_type": "contractor", "dwell_time": 89},
+      {"person_id": "7788990011", "person_type": "security_guard", "dwell_time": 45}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "e7c9g1d3-5f6h-6c0g-1e4d-8h9f5g0c7d8e",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440002",
+    "timestamp": "2026-02-12 08:30:00",
+    "location": "Playground",
+    "location_id": "c3g6d0e5-7f4h-6c9g-1d3e-8h0f5g4c9d7e",
+    "occupancy_capacity": 50,
+    "total_person": 7,
+    "person_data": [
+      {"person_id": "7766554433", "person_type": "coach", "dwell_time": 130},
+      {"person_id": "5544332211", "person_type": "security_guard", "dwell_time": 76},
+      {"person_id": "4433221100", "person_type": "maintenance", "dwell_time": 95},
+      {"person_id": "3322110099", "person_type": "visitor", "dwell_time": 15},
+      {"person_id": "1100998877", "person_type": "faculty", "dwell_time": 62},
+      {"person_id": "0099887766", "person_type": "staff", "dwell_time": 48},
+      {"person_id": "9988776655", "person_type": "student", "dwell_time": 33}
+    ],
+    "unique_person": 7
+  },
+  {
+    "client_id": "f8d0h2e4-6g7i-7d1h-2f5e-9i0g6h1d8e9f",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440003",
+    "timestamp": "2026-02-12 08:45:00",
+    "location": "Library",
+    "location_id": "d4h7e1f6-8g5i-7d0h-2e4f-9i1g6h5d0e8f",
+    "occupancy_capacity": 40,
+    "total_person": 4,
+    "person_data": [
+      {"person_id": "1234567890", "person_type": "faculty", "dwell_time": 110},
+      {"person_id": "2345678901", "person_type": "student", "dwell_time": 35},
+      {"person_id": "3456789012", "person_type": "staff", "dwell_time": 28},
+      {"person_id": "4567890123", "person_type": "maintenance", "dwell_time": 145}
+    ],
+    "unique_person": 4
+  },
+  {
+    "client_id": "g9e1i3f5-7h8j-8e2i-3g6f-0j1h7i2e9f0g",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440004",
+    "timestamp": "2026-02-12 09:00:00",
+    "location": "Cafeteria",
+    "location_id": "e5i8f2g7-9h6j-8e1i-3f5g-0j2h7i6e1f9g",
+    "occupancy_capacity": 35,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "5678901234", "person_type": "contractor", "dwell_time": 82},
+      {"person_id": "6789012345", "person_type": "security_guard", "dwell_time": 93},
+      {"person_id": "7890123456", "person_type": "visitor", "dwell_time": 11},
+      {"person_id": "8901234567", "person_type": "maintenance", "dwell_time": 54},
+      {"person_id": "9012345678", "person_type": "staff", "dwell_time": 39},
+      {"person_id": "0123456789", "person_type": "student", "dwell_time": 27}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "h0f2j4g6-8i9k-9f3j-4h7g-1k2i8j3f0g1h",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440005",
+    "timestamp": "2026-02-12 09:15:00",
+    "location": "Auditorium",
+    "location_id": "f6j9g3h8-0i7k-9f2j-4g6h-1k3i8j7f2g0h",
+    "occupancy_capacity": 100,
+    "total_person": 8,
+    "person_data": [
+      {"person_id": "1357924680", "person_type": "faculty", "dwell_time": 142},
+      {"person_id": "2468135790", "person_type": "student", "dwell_time": 63},
+      {"person_id": "3692581470", "person_type": "staff", "dwell_time": 21},
+      {"person_id": "4815926370", "person_type": "security_guard", "dwell_time": 88},
+      {"person_id": "5049273816", "person_type": "maintenance", "dwell_time": 116},
+      {"person_id": "6150384927", "person_type": "contractor", "dwell_time": 73},
+      {"person_id": "7261495038", "person_type": "visitor", "dwell_time": 19},
+      {"person_id": "8372506149", "person_type": "technician", "dwell_time": 57}
+    ],
+    "unique_person": 8
+  },
+  {
+    "client_id": "i1g3k5h7-9j0l-0g4k-5i8h-2l3j9k4g1h2i",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440006",
+    "timestamp": "2026-02-12 09:30:00",
+    "location": "Sports Complex",
+    "location_id": "g7k0h4i9-1j8l-0g3k-5h7i-2l4j9k8g3h1i",
+    "occupancy_capacity": 60,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "9483726150", "person_type": "coach", "dwell_time": 105},
+      {"person_id": "8594837261", "person_type": "student", "dwell_time": 42},
+      {"person_id": "7605948372", "person_type": "maintenance", "dwell_time": 79},
+      {"person_id": "6716059483", "person_type": "security_guard", "dwell_time": 64},
+      {"person_id": "5827160594", "person_type": "staff", "dwell_time": 31},
+      {"person_id": "4938271605", "person_type": "athlete", "dwell_time": 93}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "j2h4l6i8-0k1m-1h5l-6j9i-3m4k0l5h2i3j",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440007",
+    "timestamp": "2026-02-12 09:45:00",
+    "location": "Research Lab",
+    "location_id": "h8l1i5j0-2k9m-1h4l-6i8j-3m5k0l9h4i2j",
+    "occupancy_capacity": 15,
+    "total_person": 4,
+    "person_data": [
+      {"person_id": "3141592653", "person_type": "scientist", "dwell_time": 180},
+      {"person_id": "2718281828", "person_type": "researcher", "dwell_time": 145},
+      {"person_id": "1618033988", "person_type": "technician", "dwell_time": 92},
+      {"person_id": "1414213562", "person_type": "faculty", "dwell_time": 67}
+    ],
+    "unique_person": 4
+  },
+  {
+    "client_id": "k3i5m7j9-1l2n-2i6m-7k0j-4n5l1m6i3j4k",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440008",
+    "timestamp": "2026-02-12 10:00:00",
+    "location": "Administration",
+    "location_id": "i9m2j6k1-3l0n-2i5m-7j9k-4n6l1m0i5j3k",
+    "occupancy_capacity": 20,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "9876543210", "person_type": "admin", "dwell_time": 210},
+      {"person_id": "8765432109", "person_type": "staff", "dwell_time": 87},
+      {"person_id": "7654321098", "person_type": "faculty", "dwell_time": 43},
+      {"person_id": "6543210987", "person_type": "security_guard", "dwell_time": 112},
+      {"person_id": "5432109876", "person_type": "maintenance", "dwell_time": 68}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "l4j6n8k0-2m3o-3j7n-8k1l-5o6m2n7j4k5l",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440009",
+    "timestamp": "2026-02-12 10:15:00",
+    "location": "Main Campus",
+    "location_id": "a1e4b8c3-5d2f-4a7e-9b1c-6f8d3e2a7b5c",
+    "occupancy_capacity": 25,
+    "total_person": 7,
+    "person_data": [
+      {"person_id": "4321098765", "person_type": "student", "dwell_time": 28},
+      {"person_id": "3210987654", "person_type": "contractor", "dwell_time": 76},
+      {"person_id": "2109876543", "person_type": "maintenance", "dwell_time": 94},
+      {"person_id": "1098765432", "person_type": "faculty", "dwell_time": 52},
+      {"person_id": "1987654320", "person_type": "visitor", "dwell_time": 16},
+      {"person_id": "2876543210", "person_type": "security_guard", "dwell_time": 83},
+      {"person_id": "3765432109", "person_type": "staff", "dwell_time": 37}
+    ],
+    "unique_person": 7
+  },
+  {
+    "client_id": "m5k7o9l1-3n4p-4k8o-9l2m-6p7n3o8k5l6m",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440010",
+    "timestamp": "2026-02-12 10:30:00",
+    "location": "CFET Area",
+    "location_id": "b2f5c9d4-6e3g-5b8f-0c2d-7g9e4f3b8c6d",
+    "occupancy_capacity": 30,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "4657382910", "person_type": "engineer", "dwell_time": 134},
+      {"person_id": "5748392010", "person_type": "technician", "dwell_time": 98},
+      {"person_id": "6839403120", "person_type": "faculty", "dwell_time": 47},
+      {"person_id": "7920514230", "person_type": "student", "dwell_time": 22},
+      {"person_id": "8011625340", "person_type": "staff", "dwell_time": 56},
+      {"person_id": "9122736450", "person_type": "maintenance", "dwell_time": 73}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "n6l8p0m2-4o5q-5l9p-0m3n-7q8o4p9l6m7n",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440011",
+    "timestamp": "2026-02-12 10:45:00",
+    "location": "Playground",
+    "location_id": "c3g6d0e5-7f4h-6c9g-1d3e-8h0f5g4c9d7e",
+    "occupancy_capacity": 50,
+    "total_person": 8,
+    "person_data": [
+      {"person_id": "1231231234", "person_type": "student", "dwell_time": 31},
+      {"person_id": "2342342345", "person_type": "coach", "dwell_time": 115},
+      {"person_id": "3453453456", "person_type": "athlete", "dwell_time": 87},
+      {"person_id": "4564564567", "person_type": "security_guard", "dwell_time": 69},
+      {"person_id": "5675675678", "person_type": "maintenance", "dwell_time": 52},
+      {"person_id": "6786786789", "person_type": "visitor", "dwell_time": 18},
+      {"person_id": "7897897890", "person_type": "staff", "dwell_time": 41},
+      {"person_id": "8908908901", "person_type": "faculty", "dwell_time": 63}
+    ],
+    "unique_person": 8
+  },
+  {
+    "client_id": "o7m9q1n3-5p6r-6m0q-1n4o-8r9p5q0m7n8o",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440012",
+    "timestamp": "2026-02-12 11:00:00",
+    "location": "Library",
+    "location_id": "d4h7e1f6-8g5i-7d0h-2e4f-9i1g6h5d0e8f",
+    "occupancy_capacity": 40,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "9019019012", "person_type": "student", "dwell_time": 44},
+      {"person_id": "0120120123", "person_type": "faculty", "dwell_time": 78},
+      {"person_id": "1231231235", "person_type": "researcher", "dwell_time": 156},
+      {"person_id": "2342342346", "person_type": "staff", "dwell_time": 29},
+      {"person_id": "3453453457", "person_type": "maintenance", "dwell_time": 81}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "p8n0r2o4-6q7s-7n1r-2o5p-9s0q6r1n8o9p",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440013",
+    "timestamp": "2026-02-12 11:15:00",
+    "location": "Cafeteria",
+    "location_id": "e5i8f2g7-9h6j-8e1i-3f5g-0j2h7i6e1f9g",
+    "occupancy_capacity": 35,
+    "total_person": 7,
+    "person_data": [
+      {"person_id": "4564564568", "person_type": "staff", "dwell_time": 24},
+      {"person_id": "5675675679", "person_type": "student", "dwell_time": 19},
+      {"person_id": "6786786790", "person_type": "contractor", "dwell_time": 67},
+      {"person_id": "7897897891", "person_type": "faculty", "dwell_time": 43},
+      {"person_id": "8908908902", "person_type": "maintenance", "dwell_time": 58},
+      {"person_id": "9019019013", "person_type": "security_guard", "dwell_time": 72},
+      {"person_id": "0120120124", "person_type": "visitor", "dwell_time": 13}
+    ],
+    "unique_person": 7
+  },
+  {
+    "client_id": "q9o1s3p5-7r8t-8o2s-3p6q-0t1r7s2o9p0q",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440014",
+    "timestamp": "2026-02-12 11:30:00",
+    "location": "Auditorium",
+    "location_id": "f6j9g3h8-0i7k-9f2j-4g6h-1k3i8j7f2g0h",
+    "occupancy_capacity": 100,
+    "total_person": 9,
+    "person_data": [
+      {"person_id": "1112223334", "person_type": "faculty", "dwell_time": 89},
+      {"person_id": "2223334445", "person_type": "student", "dwell_time": 34},
+      {"person_id": "3334445556", "person_type": "staff", "dwell_time": 27},
+      {"person_id": "4445556667", "person_type": "technician", "dwell_time": 63},
+      {"person_id": "5556667778", "person_type": "security_guard", "dwell_time": 95},
+      {"person_id": "6667778889", "person_type": "maintenance", "dwell_time": 71},
+      {"person_id": "7778889990", "person_type": "contractor", "dwell_time": 48},
+      {"person_id": "8889990001", "person_type": "visitor", "dwell_time": 22},
+      {"person_id": "9990001112", "person_type": "coordinator", "dwell_time": 112}
+    ],
+    "unique_person": 9
+  },
+  {
+    "client_id": "r0p2t4q6-8s9u-9p3t-4q7r-1u2s8t3p0q1r",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440015",
+    "timestamp": "2026-02-12 11:45:00",
+    "location": "Sports Complex",
+    "location_id": "g7k0h4i9-1j8l-0g3k-5h7i-2l4j9k8g3h1i",
+    "occupancy_capacity": 60,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "1234509876", "person_type": "coach", "dwell_time": 142},
+      {"person_id": "2345610987", "person_type": "athlete", "dwell_time": 76},
+      {"person_id": "3456721098", "person_type": "student", "dwell_time": 38},
+      {"person_id": "4567832109", "person_type": "maintenance", "dwell_time": 59},
+      {"person_id": "5678943210", "person_type": "security_guard", "dwell_time": 81},
+      {"person_id": "6789054321", "person_type": "staff", "dwell_time": 45}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "s1q3u5r7-9t0v-0q4u-5r8s-2v3t9u4q1r2s",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440016",
+    "timestamp": "2026-02-12 12:00:00",
+    "location": "Research Lab",
+    "location_id": "h8l1i5j0-2k9m-1h4l-6i8j-3m5k0l9h4i2j",
+    "occupancy_capacity": 15,
+    "total_person": 3,
+    "person_data": [
+      {"person_id": "7890165432", "person_type": "scientist", "dwell_time": 195},
+      {"person_id": "8901276543", "person_type": "researcher", "dwell_time": 168},
+      {"person_id": "9012387654", "person_type": "technician", "dwell_time": 104}
+    ],
+    "unique_person": 3
+  },
+  {
+    "client_id": "t2r4v6s8-0u1w-1r5v-6s9t-3w4u0v5r2s3t",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440017",
+    "timestamp": "2026-02-12 12:15:00",
+    "location": "Administration",
+    "location_id": "i9m2j6k1-3l0n-2i5m-7j9k-4n6l1m0i5j3k",
+    "occupancy_capacity": 20,
+    "total_person": 4,
+    "person_data": [
+      {"person_id": "0123498765", "person_type": "admin", "dwell_time": 187},
+      {"person_id": "1234509877", "person_type": "staff", "dwell_time": 64},
+      {"person_id": "2345610988", "person_type": "faculty", "dwell_time": 52},
+      {"person_id": "3456721099", "person_type": "security_guard", "dwell_time": 79}
+    ],
+    "unique_person": 4
+  },
+  {
+    "client_id": "u3s5w7t9-1v2x-2s6w-7t0u-4x5v1w6s3t4u",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440018",
+    "timestamp": "2026-02-12 12:30:00",
+    "location": "Main Campus",
+    "location_id": "a1e4b8c3-5d2f-4a7e-9b1c-6f8d3e2a7b5c",
+    "occupancy_capacity": 25,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "4567832110", "person_type": "student", "dwell_time": 31},
+      {"person_id": "5678943211", "person_type": "faculty", "dwell_time": 67},
+      {"person_id": "6789054322", "person_type": "maintenance", "dwell_time": 88},
+      {"person_id": "7890165433", "person_type": "contractor", "dwell_time": 72},
+      {"person_id": "8901276544", "person_type": "staff", "dwell_time": 43},
+      {"person_id": "9012387655", "person_type": "security_guard", "dwell_time": 59}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "v4t6x8u0-2w3y-3t7x-8u1v-5y6w2x7t4u5v",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440019",
+    "timestamp": "2026-02-12 12:45:00",
+    "location": "CFET Area",
+    "location_id": "b2f5c9d4-6e3g-5b8f-0c2d-7g9e4f3b8c6d",
+    "occupancy_capacity": 30,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "0123498766", "person_type": "engineer", "dwell_time": 146},
+      {"person_id": "1234509878", "person_type": "technician", "dwell_time": 89},
+      {"person_id": "2345610989", "person_type": "scientist", "dwell_time": 112},
+      {"person_id": "3456721100", "person_type": "faculty", "dwell_time": 54},
+      {"person_id": "4567832111", "person_type": "student", "dwell_time": 28}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "w5u7y9v1-3x4z-4u8y-9v2w-6z7x3y8u5v6w",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440020",
+    "timestamp": "2026-02-12 13:00:00",
+    "location": "Playground",
+    "location_id": "c3g6d0e5-7f4h-6c9g-1d3e-8h0f5g4c9d7e",
+    "occupancy_capacity": 50,
+    "total_person": 7,
+    "person_data": [
+      {"person_id": "5678943212", "person_type": "student", "dwell_time": 26},
+      {"person_id": "6789054323", "person_type": "coach", "dwell_time": 108},
+      {"person_id": "7890165434", "person_type": "athlete", "dwell_time": 73},
+      {"person_id": "8901276545", "person_type": "security_guard", "dwell_time": 61},
+      {"person_id": "9012387656", "person_type": "maintenance", "dwell_time": 47},
+      {"person_id": "0123498767", "person_type": "visitor", "dwell_time": 19},
+      {"person_id": "1234509879", "person_type": "staff", "dwell_time": 35}
+    ],
+    "unique_person": 7
+  },
+  {
+    "client_id": "x6v8z0w2-4y5a-5v9z-0w3x-7a8y4z9v6w7x",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440021",
+    "timestamp": "2026-02-12 13:15:00",
+    "location": "Library",
+    "location_id": "d4h7e1f6-8g5i-7d0h-2e4f-9i1g6h5d0e8f",
+    "occupancy_capacity": 40,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "2345610990", "person_type": "student", "dwell_time": 41},
+      {"person_id": "3456721101", "person_type": "faculty", "dwell_time": 73},
+      {"person_id": "4567832112", "person_type": "researcher", "dwell_time": 142},
+      {"person_id": "5678943213", "person_type": "staff", "dwell_time": 32},
+      {"person_id": "6789054324", "person_type": "maintenance", "dwell_time": 64},
+      {"person_id": "7890165435", "person_type": "librarian", "dwell_time": 96}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "y7w9a1x3-5z6b-6w0a-1x4y-8b9z5a0w7x8y",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440022",
+    "timestamp": "2026-02-12 13:30:00",
+    "location": "Cafeteria",
+    "location_id": "e5i8f2g7-9h6j-8e1i-3f5g-0j2h7i6e1f9g",
+    "occupancy_capacity": 35,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "8901276546", "person_type": "staff", "dwell_time": 22},
+      {"person_id": "9012387657", "person_type": "student", "dwell_time": 18},
+      {"person_id": "0123498768", "person_type": "contractor", "dwell_time": 59},
+      {"person_id": "1234509880", "person_type": "faculty", "dwell_time": 38},
+      {"person_id": "2345610991", "person_type": "maintenance", "dwell_time": 51},
+      {"person_id": "3456721102", "person_type": "security_guard", "dwell_time": 67}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "z8x9b2y4-6c7d-7x1b-2y5z-9c0d6b1x8y9z",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440023",
+    "timestamp": "2026-02-12 13:45:00",
+    "location": "Auditorium",
+    "location_id": "f6j9g3h8-0i7k-9f2j-4g6h-1k3i8j7f2g0h",
+    "occupancy_capacity": 100,
+    "total_person": 8,
+    "person_data": [
+      {"person_id": "4567832113", "person_type": "faculty", "dwell_time": 77},
+      {"person_id": "5678943214", "person_type": "student", "dwell_time": 29},
+      {"person_id": "6789054325", "person_type": "staff", "dwell_time": 24},
+      {"person_id": "7890165436", "person_type": "technician", "dwell_time": 58},
+      {"person_id": "8901276547", "person_type": "security_guard", "dwell_time": 84},
+      {"person_id": "9012387658", "person_type": "maintenance", "dwell_time": 62},
+      {"person_id": "0123498769", "person_type": "contractor", "dwell_time": 43},
+      {"person_id": "1234509881", "person_type": "visitor", "dwell_time": 17}
+    ],
+    "unique_person": 8
+  },
+  {
+    "client_id": "a9y0c3z5-7d8e-8y2c-3z6a-0e1d7c2y9z0a",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440024",
+    "timestamp": "2026-02-12 14:00:00",
+    "location": "Sports Complex",
+    "location_id": "g7k0h4i9-1j8l-0g3k-5h7i-2l4j9k8g3h1i",
+    "occupancy_capacity": 60,
+    "total_person": 7,
+    "person_data": [
+      {"person_id": "2345610992", "person_type": "coach", "dwell_time": 125},
+      {"person_id": "3456721103", "person_type": "athlete", "dwell_time": 82},
+      {"person_id": "4567832114", "person_type": "student", "dwell_time": 37},
+      {"person_id": "5678943215", "person_type": "maintenance", "dwell_time": 55},
+      {"person_id": "6789054326", "person_type": "security_guard", "dwell_time": 73},
+      {"person_id": "7890165437", "person_type": "staff", "dwell_time": 41},
+      {"person_id": "8901276548", "person_type": "physiotherapist", "dwell_time": 98}
+    ],
+    "unique_person": 7
+  },
+  {
+    "client_id": "b0z1d4a6-8e9f-9z3d-4a7b-1f2e8d3z0a1b",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440025",
+    "timestamp": "2026-02-12 14:15:00",
+    "location": "Research Lab",
+    "location_id": "h8l1i5j0-2k9m-1h4l-6i8j-3m5k0l9h4i2j",
+    "occupancy_capacity": 15,
+    "total_person": 4,
+    "person_data": [
+      {"person_id": "9012387659", "person_type": "scientist", "dwell_time": 176},
+      {"person_id": "0123498770", "person_type": "researcher", "dwell_time": 152},
+      {"person_id": "1234509882", "person_type": "technician", "dwell_time": 89},
+      {"person_id": "2345610993", "person_type": "faculty", "dwell_time": 61}
+    ],
+    "unique_person": 4
+  },
+  {
+    "client_id": "c1a2e5b7-9f0g-0a4e-5b8c-2g3f9e4a1b2c",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440026",
+    "timestamp": "2026-02-12 14:30:00",
+    "location": "Administration",
+    "location_id": "i9m2j6k1-3l0n-2i5m-7j9k-4n6l1m0i5j3k",
+    "occupancy_capacity": 20,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "3456721104", "person_type": "admin", "dwell_time": 168},
+      {"person_id": "4567832115", "person_type": "staff", "dwell_time": 57},
+      {"person_id": "5678943216", "person_type": "faculty", "dwell_time": 46},
+      {"person_id": "6789054327", "person_type": "security_guard", "dwell_time": 71},
+      {"person_id": "7890165438", "person_type": "maintenance", "dwell_time": 63}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "d2b3f6c8-0g1h-1b5f-6c9d-3h4g0f5b2c3d",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440027",
+    "timestamp": "2026-02-12 14:45:00",
+    "location": "Main Campus",
+    "location_id": "a1e4b8c3-5d2f-4a7e-9b1c-6f8d3e2a7b5c",
+    "occupancy_capacity": 25,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "8901276549", "person_type": "student", "dwell_time": 29},
+      {"person_id": "9012387660", "person_type": "faculty", "dwell_time": 58},
+      {"person_id": "0123498771", "person_type": "maintenance", "dwell_time": 77},
+      {"person_id": "1234509883", "person_type": "contractor", "dwell_time": 64},
+      {"person_id": "2345610994", "person_type": "staff", "dwell_time": 38},
+      {"person_id": "3456721105", "person_type": "security_guard", "dwell_time": 52}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "e3c4g7d9-1h2i-2c6g-7d0e-4i5h1g6c3d4e",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440028",
+    "timestamp": "2026-02-12 15:00:00",
+    "location": "CFET Area",
+    "location_id": "b2f5c9d4-6e3g-5b8f-0c2d-7g9e4f3b8c6d",
+    "occupancy_capacity": 30,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "4567832116", "person_type": "engineer", "dwell_time": 129},
+      {"person_id": "5678943217", "person_type": "technician", "dwell_time": 83},
+      {"person_id": "6789054328", "person_type": "scientist", "dwell_time": 105},
+      {"person_id": "7890165439", "person_type": "faculty", "dwell_time": 49},
+      {"person_id": "8901276550", "person_type": "student", "dwell_time": 26}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "f4d5h8e0-2i3j-3d7h-8e1f-5j6i2h7d4e5f",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440029",
+    "timestamp": "2026-02-12 15:15:00",
+    "location": "Playground",
+    "location_id": "c3g6d0e5-7f4h-6c9g-1d3e-8h0f5g4c9d7e",
+    "occupancy_capacity": 50,
+    "total_person": 8,
+    "person_data": [
+      {"person_id": "9012387661", "person_type": "student", "dwell_time": 23},
+      {"person_id": "0123498772", "person_type": "coach", "dwell_time": 118},
+      {"person_id": "1234509884", "person_type": "athlete", "dwell_time": 79},
+      {"person_id": "2345610995", "person_type": "security_guard", "dwell_time": 68},
+      {"person_id": "3456721106", "person_type": "maintenance", "dwell_time": 44},
+      {"person_id": "4567832117", "person_type": "visitor", "dwell_time": 21},
+      {"person_id": "5678943218", "person_type": "staff", "dwell_time": 33},
+      {"person_id": "6789054329", "person_type": "referee", "dwell_time": 91}
+    ],
+    "unique_person": 8
+  },
+  {
+    "client_id": "g5e6i9f1-3k4l-4e8i-9f2g-6l7k3i8e5f6g",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440030",
+    "timestamp": "2026-02-12 15:30:00",
+    "location": "Library",
+    "location_id": "d4h7e1f6-8g5i-7d0h-2e4f-9i1g6h5d0e8f",
+    "occupancy_capacity": 40,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "7890165440", "person_type": "student", "dwell_time": 38},
+      {"person_id": "8901276551", "person_type": "faculty", "dwell_time": 69},
+      {"person_id": "9012387662", "person_type": "researcher", "dwell_time": 135},
+      {"person_id": "0123498773", "person_type": "staff", "dwell_time": 31},
+      {"person_id": "1234509885", "person_type": "maintenance", "dwell_time": 58},
+      {"person_id": "2345610996", "person_type": "librarian", "dwell_time": 87}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "h6f7j0g2-4l5m-5f9j-0g3h-7m8l4j9f6g7h",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440031",
+    "timestamp": "2026-02-12 15:45:00",
+    "location": "Cafeteria",
+    "location_id": "e5i8f2g7-9h6j-8e1i-3f5g-0j2h7i6e1f9g",
+    "occupancy_capacity": 35,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "3456721107", "person_type": "staff", "dwell_time": 26},
+      {"person_id": "4567832118", "person_type": "student", "dwell_time": 20},
+      {"person_id": "5678943219", "person_type": "contractor", "dwell_time": 63},
+      {"person_id": "6789054330", "person_type": "faculty", "dwell_time": 41},
+      {"person_id": "7890165441", "person_type": "maintenance", "dwell_time": 54},
+      {"person_id": "8901276552", "person_type": "security_guard", "dwell_time": 71}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "i7g8k1h3-5n6o-6g0k-1h4i-8o9m5k0g7h8i",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440032",
+    "timestamp": "2026-02-12 16:00:00",
+    "location": "Auditorium",
+    "location_id": "f6j9g3h8-0i7k-9f2j-4g6h-1k3i8j7f2g0h",
+    "occupancy_capacity": 100,
+    "total_person": 7,
+    "person_data": [
+      {"person_id": "9012387663", "person_type": "faculty", "dwell_time": 82},
+      {"person_id": "0123498774", "person_type": "student", "dwell_time": 32},
+      {"person_id": "1234509886", "person_type": "staff", "dwell_time": 27},
+      {"person_id": "2345610997", "person_type": "technician", "dwell_time": 61},
+      {"person_id": "3456721108", "person_type": "security_guard", "dwell_time": 79},
+      {"person_id": "4567832119", "person_type": "maintenance", "dwell_time": 58},
+      {"person_id": "5678943220", "person_type": "contractor", "dwell_time": 46}
+    ],
+    "unique_person": 7
+  },
+  {
+    "client_id": "j8h9l2i4-6o7p-7h1l-2i5j-9p0n6l1h8i9j",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440033",
+    "timestamp": "2026-02-12 16:15:00",
+    "location": "Sports Complex",
+    "location_id": "g7k0h4i9-1j8l-0g3k-5h7i-2l4j9k8g3h1i",
+    "occupancy_capacity": 60,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "6789054331", "person_type": "coach", "dwell_time": 112},
+      {"person_id": "7890165442", "person_type": "athlete", "dwell_time": 74},
+      {"person_id": "8901276553", "person_type": "student", "dwell_time": 35},
+      {"person_id": "9012387664", "person_type": "maintenance", "dwell_time": 52},
+      {"person_id": "0123498775", "person_type": "security_guard", "dwell_time": 67},
+      {"person_id": "1234509887", "person_type": "staff", "dwell_time": 39}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "k9i0m3j5-7p8q-8i2m-3j6k-0q1p7m2i9j0k",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440034",
+    "timestamp": "2026-02-12 16:30:00",
+    "location": "Research Lab",
+    "location_id": "h8l1i5j0-2k9m-1h4l-6i8j-3m5k0l9h4i2j",
+    "occupancy_capacity": 15,
+    "total_person": 3,
+    "person_data": [
+      {"person_id": "2345610998", "person_type": "scientist", "dwell_time": 184},
+      {"person_id": "3456721109", "person_type": "researcher", "dwell_time": 159},
+      {"person_id": "4567832120", "person_type": "technician", "dwell_time": 97}
+    ],
+    "unique_person": 3
+  },
+  {
+    "client_id": "l0j1n4k6-8q9r-9j3n-4k7l-1r2s8n3j0k1l",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440035",
+    "timestamp": "2026-02-12 16:45:00",
+    "location": "Administration",
+    "location_id": "i9m2j6k1-3l0n-2i5m-7j9k-4n6l1m0i5j3k",
+    "occupancy_capacity": 20,
+    "total_person": 4,
+    "person_data": [
+      {"person_id": "5678943221", "person_type": "admin", "dwell_time": 159},
+      {"person_id": "6789054332", "person_type": "staff", "dwell_time": 54},
+      {"person_id": "7890165443", "person_type": "faculty", "dwell_time": 48},
+      {"person_id": "8901276554", "person_type": "security_guard", "dwell_time": 73}
+    ],
+    "unique_person": 4
+  },
+  {
+    "client_id": "m1k2o5l7-9r0s-0k4o-5l8m-2s3t9o4l1m2n",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440036",
+    "timestamp": "2026-02-12 17:00:00",
+    "location": "Main Campus",
+    "location_id": "a1e4b8c3-5d2f-4a7e-9b1c-6f8d3e2a7b5c",
+    "occupancy_capacity": 25,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "9012387665", "person_type": "student", "dwell_time": 27},
+      {"person_id": "0123498776", "person_type": "faculty", "dwell_time": 55},
+      {"person_id": "1234509888", "person_type": "maintenance", "dwell_time": 71},
+      {"person_id": "2345610999", "person_type": "staff", "dwell_time": 36},
+      {"person_id": "3456721110", "person_type": "security_guard", "dwell_time": 62}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "n2l3p6m8-0s1t-1l5p-6m9n-3t4u0p5m2n3o",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440037",
+    "timestamp": "2026-02-12 17:15:00",
+    "location": "CFET Area",
+    "location_id": "b2f5c9d4-6e3g-5b8f-0c2d-7g9e4f3b8c6d",
+    "occupancy_capacity": 30,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "4567832121", "person_type": "engineer", "dwell_time": 118},
+      {"person_id": "5678943222", "person_type": "technician", "dwell_time": 77},
+      {"person_id": "6789054333", "person_type": "scientist", "dwell_time": 98},
+      {"person_id": "7890165444", "person_type": "faculty", "dwell_time": 45},
+      {"person_id": "8901276555", "person_type": "student", "dwell_time": 24},
+      {"person_id": "9012387666", "person_type": "contractor", "dwell_time": 69}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "o3m4q7n9-1u2v-2m6q-7n0o-4v5w1q6n3o4p",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440038",
+    "timestamp": "2026-02-12 17:30:00",
+    "location": "Playground",
+    "location_id": "c3g6d0e5-7f4h-6c9g-1d3e-8h0f5g4c9d7e",
+    "occupancy_capacity": 50,
+    "total_person": 7,
+    "person_data": [
+      {"person_id": "0123498777", "person_type": "student", "dwell_time": 22},
+      {"person_id": "1234509889", "person_type": "coach", "dwell_time": 103},
+      {"person_id": "2345611000", "person_type": "athlete", "dwell_time": 71},
+      {"person_id": "3456721111", "person_type": "security_guard", "dwell_time": 59},
+      {"person_id": "4567832122", "person_type": "maintenance", "dwell_time": 43},
+      {"person_id": "5678943223", "person_type": "visitor", "dwell_time": 18},
+      {"person_id": "6789054334", "person_type": "staff", "dwell_time": 32}
+    ],
+    "unique_person": 7
+  },
+  {
+    "client_id": "p4n5r8o0-2v3w-3n7r-8o1p-5w6x2r7o4p5q",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440039",
+    "timestamp": "2026-02-12 17:45:00",
+    "location": "Library",
+    "location_id": "d4h7e1f6-8g5i-7d0h-2e4f-9i1g6h5d0e8f",
+    "occupancy_capacity": 40,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "7890165445", "person_type": "student", "dwell_time": 35},
+      {"person_id": "8901276556", "person_type": "faculty", "dwell_time": 64},
+      {"person_id": "9012387667", "person_type": "researcher", "dwell_time": 128},
+      {"person_id": "0123498778", "person_type": "staff", "dwell_time": 29},
+      {"person_id": "1234509890", "person_type": "librarian", "dwell_time": 81}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "q5o6s9p1-3x4y-4o8s-9p2q-6y7z3s8p5q6r",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440040",
+    "timestamp": "2026-02-12 18:00:00",
+    "location": "Cafeteria",
+    "location_id": "e5i8f2g7-9h6j-8e1i-3f5g-0j2h7i6e1f9g",
+    "occupancy_capacity": 35,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "2345611001", "person_type": "staff", "dwell_time": 24},
+      {"person_id": "3456721112", "person_type": "student", "dwell_time": 19},
+      {"person_id": "4567832123", "person_type": "faculty", "dwell_time": 37},
+      {"person_id": "5678943224", "person_type": "maintenance", "dwell_time": 49},
+      {"person_id": "6789054335", "person_type": "security_guard", "dwell_time": 58}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "r6p7t0q2-4y5z-5p9t-0q3r-7z8a4t9q6r7s",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440041",
+    "timestamp": "2026-02-12 18:15:00",
+    "location": "Auditorium",
+    "location_id": "f6j9g3h8-0i7k-9f2j-4g6h-1k3i8j7f2g0h",
+    "occupancy_capacity": 100,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "7890165446", "person_type": "faculty", "dwell_time": 71},
+      {"person_id": "8901276557", "person_type": "student", "dwell_time": 28},
+      {"person_id": "9012387668", "person_type": "staff", "dwell_time": 25},
+      {"person_id": "0123498779", "person_type": "security_guard", "dwell_time": 69},
+      {"person_id": "1234509891", "person_type": "maintenance", "dwell_time": 53},
+      {"person_id": "2345611002", "person_type": "technician", "dwell_time": 47}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "s7q8u1r3-5a6b-6q0u-1r4s-8b9c5u0r7s8t",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440042",
+    "timestamp": "2026-02-12 18:30:00",
+    "location": "Sports Complex",
+    "location_id": "g7k0h4i9-1j8l-0g3k-5h7i-2l4j9k8g3h1i",
+    "occupancy_capacity": 60,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "3456721113", "person_type": "coach", "dwell_time": 96},
+      {"person_id": "4567832124", "person_type": "athlete", "dwell_time": 68},
+      {"person_id": "5678943225", "person_type": "student", "dwell_time": 31},
+      {"person_id": "6789054336", "person_type": "maintenance", "dwell_time": 46},
+      {"person_id": "7890165447", "person_type": "security_guard", "dwell_time": 61}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "t8r9v2s4-6c7d-7r1v-2s5t-9c0d6v1s8t9u",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440043",
+    "timestamp": "2026-02-12 18:45:00",
+    "location": "Research Lab",
+    "location_id": "h8l1i5j0-2k9m-1h4l-6i8j-3m5k0l9h4i2j",
+    "occupancy_capacity": 15,
+    "total_person": 4,
+    "person_data": [
+      {"person_id": "8901276558", "person_type": "scientist", "dwell_time": 167},
+      {"person_id": "9012387669", "person_type": "researcher", "dwell_time": 143},
+      {"person_id": "0123498780", "person_type": "technician", "dwell_time": 88},
+      {"person_id": "1234509892", "person_type": "faculty", "dwell_time": 57}
+    ],
+    "unique_person": 4
+  },
+  {
+    "client_id": "u9s0w3t5-7d8e-8s2w-3t6u-0e1f7w2t9u0v",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440044",
+    "timestamp": "2026-02-12 19:00:00",
+    "location": "Administration",
+    "location_id": "i9m2j6k1-3l0n-2i5m-7j9k-4n6l1m0i5j3k",
+    "occupancy_capacity": 20,
+    "total_person": 3,
+    "person_data": [
+      {"person_id": "2345611003", "person_type": "admin", "dwell_time": 146},
+      {"person_id": "3456721114", "person_type": "staff", "dwell_time": 52},
+      {"person_id": "4567832125", "person_type": "security_guard", "dwell_time": 68}
+    ],
+    "unique_person": 3
+  },
+  {
+    "client_id": "v0t1x4u6-8e9f-9t3x-4u7v-1f2g8x3u0v1w",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440045",
+    "timestamp": "2026-02-12 19:15:00",
+    "location": "Main Campus",
+    "location_id": "a1e4b8c3-5d2f-4a7e-9b1c-6f8d3e2a7b5c",
+    "occupancy_capacity": 25,
+    "total_person": 4,
+    "person_data": [
+      {"person_id": "5678943226", "person_type": "student", "dwell_time": 24},
+      {"person_id": "6789054337", "person_type": "faculty", "dwell_time": 49},
+      {"person_id": "7890165448", "person_type": "security_guard", "dwell_time": 57},
+      {"person_id": "8901276559", "person_type": "maintenance", "dwell_time": 63}
+    ],
+    "unique_person": 4
+  },
+  {
+    "client_id": "w1u2y5v7-9f0g-0u4y-5v8w-2g3h9y4v1w2x",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440046",
+    "timestamp": "2026-02-12 19:30:00",
+    "location": "CFET Area",
+    "location_id": "b2f5c9d4-6e3g-5b8f-0c2d-7g9e4f3b8c6d",
+    "occupancy_capacity": 30,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "9012387670", "person_type": "engineer", "dwell_time": 108},
+      {"person_id": "0123498781", "person_type": "technician", "dwell_time": 72},
+      {"person_id": "1234509893", "person_type": "faculty", "dwell_time": 44},
+      {"person_id": "2345611004", "person_type": "student", "dwell_time": 23},
+      {"person_id": "3456721115", "person_type": "contractor", "dwell_time": 59}
+    ],
+    "unique_person": 5
+  },
+  {
+    "client_id": "x2v3z6w6-0g1h-1v5z-6w9x-3h4i0z5w2x3y",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440047",
+    "timestamp": "2026-02-12 19:45:00",
+    "location": "Playground",
+    "location_id": "c3g6d0e5-7f4h-6c9g-1d3e-8h0f5g4c9d7e",
+    "occupancy_capacity": 50,
+    "total_person": 6,
+    "person_data": [
+      {"person_id": "4567832126", "person_type": "student", "dwell_time": 21},
+      {"person_id": "5678943227", "person_type": "coach", "dwell_time": 94},
+      {"person_id": "6789054338", "person_type": "athlete", "dwell_time": 66},
+      {"person_id": "7890165449", "person_type": "security_guard", "dwell_time": 54},
+      {"person_id": "8901276560", "person_type": "maintenance", "dwell_time": 42},
+      {"person_id": "9012387671", "person_type": "staff", "dwell_time": 31}
+    ],
+    "unique_person": 6
+  },
+  {
+    "client_id": "y3w4a7x7-1i2j-2w6a-7x0y-4j5k1a6x3y4z",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440048",
+    "timestamp": "2026-02-12 20:00:00",
+    "location": "Library",
+    "location_id": "d4h7e1f6-8g5i-7d0h-2e4f-9i1g6h5d0e8f",
+    "occupancy_capacity": 40,
+    "total_person": 4,
+    "person_data": [
+      {"person_id": "0123498782", "person_type": "student", "dwell_time": 33},
+      {"person_id": "1234509894", "person_type": "faculty", "dwell_time": 58},
+      {"person_id": "2345611005", "person_type": "librarian", "dwell_time": 76},
+      {"person_id": "3456721116", "person_type": "staff", "dwell_time": 27}
+    ],
+    "unique_person": 4
+  },
+  {
+    "client_id": "z4x5b8y8-2k3l-3x7b-8y1z-5l6m2b7y4z5a",
+    "camera_id": "550e8400-e29b-41d4-a716-446655440049",
+    "timestamp": "2026-02-12 20:15:00",
+    "location": "Cafeteria",
+    "location_id": "e5i8f2g7-9h6j-8e1i-3f5g-0j2h7i6e1f9g",
+    "occupancy_capacity": 35,
+    "total_person": 4,
+    "person_data": [
+      {"person_id": "4567832127", "person_type": "staff", "dwell_time": 22},
+      {"person_id": "5678943228", "person_type": "student", "dwell_time": 18},
+      {"person_id": "6789054339", "person_type": "maintenance", "dwell_time": 45},
+      {"person_id": "7890165450", "person_type": "security_guard", "dwell_time": 52}
+    ],
+    "unique_person": 4
+  }
+]

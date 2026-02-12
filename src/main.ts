@@ -2,9 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
-import { AllExceptionsFilter } from '../libs/common/src/filters';
-
-import { LoggingInterceptor } from '../libs/common/src/interceptors';
+import { AllExceptionsFilter, LoggingInterceptor } from '../libs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,13 +21,15 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new AllExceptionsFilter());
-  // app.useGlobalFilters(new DebugExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
 
+  const corsOrigin = configService.get<string[] | string>('cors.origin', '*');
+  const corsCredentials = configService.get<boolean>('cors.credentials', false);
   app.enableCors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: Array.isArray(corsOrigin) ? corsOrigin : corsOrigin,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: corsCredentials,
   });
 
   await app.listen(port);

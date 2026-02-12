@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { OverviewController } from './overview.controller';
 import { OverviewService } from './overview.service';
-import { ElasticModule } from '../../libs/common/src/elastic';
+import { ElasticModule, UtilsModule } from '../../libs/common';
 
 @Module({
-  imports: [ElasticModule],
+  imports: [ElasticModule, UtilsModule],
   controllers: [OverviewController],
   providers: [OverviewService],
   exports: [OverviewService],

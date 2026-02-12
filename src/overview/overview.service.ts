@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ElasticService } from '../../libs/common/src/elastic/elastic.service';
+import { ElasticService, UtilsService } from '../../libs/common';
 
 export interface SearchOptions {
   query?: string;
@@ -20,7 +20,10 @@ export interface GetAllOptions {
 export class OverviewService {
   private readonly logger = new Logger(OverviewService.name);
 
-  constructor(private readonly elasticService: ElasticService) { }
+  constructor(
+    private readonly elasticService: ElasticService,
+    private readonly utilsService: UtilsService,
+  ) {}
 
   /**
    * Get all events with pagination
@@ -417,66 +420,54 @@ export class OverviewService {
     }
   }
 
+  /** Max buckets for terms agg so we return every person_type in the index. */
+  private static readonly TERMS_AGG_SIZE_MAX = 65535;
+
   /**
- * Get dashboard summary. Every request queries Elasticsearch (no caching),
- * so values and counts update each time you hit the endpoint as new data is indexed.
- */
+   * Get all person_type values and their count from camera index (all data present in DB).
+   * Returns one item per person_type with title = type, value = count for that type.
+   */
   async getSummary() {
     try {
       const client = this.elasticService.getClient();
-      const indexName = this.elasticService.getIndexName();
+      const cameraIndexName = this.elasticService.getCameraIndexName();
 
-      const query: any = {
-        bool: {
-          must: [
-            { term: { event_type: 'metric_update' } }
-          ]
-        }
-      };
-
-      const response: any = await client.search({
-        index: indexName,
-        size: 1000,  // This will return NO hits
-        query: query
+      const response = await client.search({
+        index: cameraIndexName,
+        size: 0,
+        query: { match_all: {} },
+        aggs: {
+          by_person_type: {
+            nested: { path: 'person_data' },
+            aggs: {
+              types: {
+                terms: {
+                  field: 'person_data.person_type',
+                  size: OverviewService.TERMS_AGG_SIZE_MAX,
+                  order: { _count: 'desc' },
+                },
+              },
+            },
+          },
+        },
       });
 
-      const data = response.hits.hits.map((hit: any) => hit._source);
+      const buckets =
+        (response.aggregations as any)?.by_person_type?.types?.buckets ?? [];
+      const total = buckets.reduce(
+        (sum: number, b: { key: string; doc_count: number }) => sum + b.doc_count,
+        0,
+      );
 
-      const num = (v: any) => (v === undefined || v === null ? 0 : Number(v));
-      const groupedData = data.reduce((acc: any, curr: any) => {
-        const key = curr.metric_name;
-        acc[key] = (acc[key] || 0) + num(curr.value);
-        return acc;
-      }, {});
-
-      const studentsSum = groupedData['Students on Campus'] ?? 0;
-      const staffPresentSum = groupedData['Staff Present'] ?? 0;
-      const activeEventsSum = groupedData['Active Events'] ?? 0;
-      const spaceUtilizationSum = groupedData['Space Utilization'] ?? 0;
-      const gateEntriesTodaySum = groupedData['Gate Entries Today'] ?? 0;
-      return {
-        //'data':data.length,
-        'students on Campus': {
-          title: 'students on Campus',
-          value: studentsSum,
-        },
-        'staff present': {
-          title: 'staff present',
-          value: staffPresentSum,
-        },
-        'active events': {
-          title: 'active events',
-          value: activeEventsSum,
-        },
-        'space utilization': {
-          title: 'space utilization',
-          value: `${(spaceUtilizationSum / (spaceUtilizationSum < 1000 ? 100 : 1000)).toFixed(2)}%`,
-        },
-        'gate entries today': {
-          title: 'gate entries today',
-          value: gateEntriesTodaySum,
-        },
-      };
+      return buckets.map((bucket: { key: string; doc_count: number }) => ({
+        title: bucket.key,
+        value: bucket.doc_count,
+        description: this.utilsService.cardsDescription(
+          bucket.key,
+          bucket.doc_count,
+          total,
+        ),
+      }));
     } catch (error) {
       this.logger.error('Error getting summary:', error);
       throw error;

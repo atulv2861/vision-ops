@@ -70,16 +70,7 @@ curl -X GET "http://localhost:3000/api/overview/by-zone?zone_id=ZONE01"
 curl -X GET "http://localhost:3000/api/overview/by-zone?zone_id=ZONE_ALL"
 ```
 
-## 6. Ingest Overview Data from CSV
-
-Use `curl` (available on Windows via `curl.exe` or Git Bash):
-
-```bash
-# Ingest overview.csv
-curl -X POST "http://localhost:3000/api/overview/ingest" -F "file=@libs/common/src/csv/overview.csv"
-```
-
-## 7. Get Space Utilization (Top 5)
+## 6. Get Space Utilization (Top 5)
 
 ```bash
 # Get top 5 spaces by utilization
@@ -109,9 +100,6 @@ Invoke-RestMethod -Uri "http://localhost:3000/api/overview/search?q=gate&event_t
 
 # Get statistics
 Invoke-RestMethod -Uri "http://localhost:3000/api/overview/stats" -Method Get
-
-# Ingest overview.csv (use curl.exe)
-curl.exe -X POST "http://localhost:3000/api/overview/ingest" -F "file=@libs/common/src/csv/overview.csv"
 
 # Get Space Utilization
 Invoke-RestMethod -Uri "http://localhost:3000/api/overview/space-utilization" -Method Get

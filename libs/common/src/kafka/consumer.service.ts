@@ -85,9 +85,9 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
 
   private async subscribe() {
     try {
-      const topic = this.configService.get<string>('kafka.topics.cameraEvents') || 'visionops.camera.events.v1';
-      await this.consumer.subscribe({ topic, fromBeginning: false });
-      this.logger.log(`Subscribed to topic: ${topic}`);
+      const cameraOccupancy = this.configService.get<string>('kafka.topics.cameraOccupancy') ?? 'visionops.camera.occupancy.v1';
+      await this.consumer.subscribe({ topics: [cameraOccupancy], fromBeginning: false });
+      this.logger.log(`Subscribed to topic: ${cameraOccupancy}`);
     } catch (error) {
       this.logger.error('Failed to subscribe to topic', error);
       throw error;
@@ -149,14 +149,8 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
         value: parsedData,
       });
 
-      // Process the camera event
-      await this.processCameraEvent(parsedData, {
-        topic,
-        partition,
-        offset,
-        key: key ? key.toString() : null,
-        timestamp: timestampISO,
-      });
+      const metadata = { topic, partition, offset, key: key ? key.toString() : null, timestamp: timestampISO };
+      await this.processCameraOccupancyEvent(parsedData, metadata);
     } catch (error) {
       this.logger.error('Error handling message', {
         error: error.message,
@@ -211,34 +205,29 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  private async processCameraEvent(
+  /**
+   * Process camera occupancy message: index into vision-ops-camera.
+   */
+  private async processCameraOccupancyEvent(
     data: any,
-    metadata: {
-      topic: string;
-      partition: number;
-      offset: string;
-      key: string | null;
-      timestamp: string | null;
-    },
+    metadata: { topic: string; partition: number; offset: string; key: string | null; timestamp: string | null },
   ) {
-    this.logger.log('Processing camera event:', {
-      data,
-      metadata,
-    });
-
+    this.logger.debug('Processing camera occupancy', { camera_id: data?.camera_id, offset: metadata.offset });
     try {
-      // Store the event in Elasticsearch (only CSV data, no Kafka metadata)
-      await this.elasticService.indexDocument(data);
-
-      this.logger.log(
-        `Camera event stored in Elasticsearch successfully - Event ID: ${data.event_id || 'N/A'}, Offset: ${metadata.offset}`,
-      );
-    } catch (error) {
-      this.logger.error(`Error storing event in Elasticsearch: ${error.message}`, {
-        event_id: data.event_id,
-        offset: metadata.offset,
+      await this.elasticService.indexCameraDocument({
+        client_id: data.client_id,
+        camera_id: data.camera_id,
+        timestamp: data.timestamp,
+        location: data.location,
+        location_id: data.location_id,
+        occupancy_capacity: data.occupancy_capacity ?? 0,
+        total_person: data.total_person ?? 0,
+        person_data: Array.isArray(data.person_data) ? data.person_data : [],
+        unique_person: data.unique_person ?? 0,
       });
-      // Don't throw - we want to continue processing even if Elasticsearch fails
+      this.logger.log(`Camera occupancy indexed - camera_id: ${data?.camera_id}, offset: ${metadata.offset}`);
+    } catch (error: any) {
+      this.logger.error(`Error indexing camera occupancy: ${error.message}`, { camera_id: data?.camera_id, offset: metadata.offset });
     }
   }
 

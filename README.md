@@ -57,6 +57,21 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Project structure
+
+- `src/` – Application modules (app, health, overview, events). Entry: `main.ts`.
+- `libs/common/` – Shared library: config, Elasticsearch, Kafka, filters, interceptors, utils. Consumed via barrel `../libs/common`.
+- `data/` – Static data (e.g. `vision-ops-camera.json` for Kafka producer).
+
+Imports from the shared library use the barrel: `import { ConfigModule, ElasticService } from '../libs/common'` (or `../../libs/common` from subfolders).
+
+## Production
+
+- **Build:** `npm run build` (output in `dist/`). **Run:** `npm run start:prod` (`node dist/main`).
+- **Health:** `GET /api/health` returns `{ status: 'ok', timestamp, service: 'vision-ops' }` for load balancers and orchestration.
+- **Config:** Set env vars (no defaults with secrets in production). Key vars: `NODE_ENV`, `PORT`, `API_PREFIX`, `CORS_ORIGIN` (comma-separated), `KAFKA_BROKER`, `KAFKA_TOPIC_CAMERA_OCCUPANCY`, `ELASTICSEARCH_NODE`, `ELASTICSEARCH_USERNAME`, `ELASTICSEARCH_PASSWORD`, `ELASTICSEARCH_INDEX`, `ELASTICSEARCH_CAMERA_INDEX`. Copy from a template (e.g. create `.env` from an `.env.example` with placeholders) and never commit secrets.
+- **CORS:** Configure `CORS_ORIGIN` for production; avoid `*` in production.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.

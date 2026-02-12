@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ElasticService } from '../../libs/common/src/elastic/elastic.service';
+import { ElasticService } from '../../libs/common';
 
 @Injectable()
 export class EventsService {

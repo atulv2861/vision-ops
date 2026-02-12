@@ -1,18 +1,25 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
+import {
+  VISION_OPS_CAMERA_INDEX_MAPPING,
+  VISION_OPS_CAMERA_INDEX_SETTINGS,
+} from './vision-ops-camera.index';
 
 @Injectable()
 export class ElasticService implements OnModuleInit {
   private readonly logger = new Logger(ElasticService.name);
   private client: Client;
   private indexName: string;
+  private cameraIndexName: string;
 
   constructor(private readonly configService: ConfigService) {
     const node = this.configService.get<string>('elasticsearch.node') || 'http://34.173.116.41:9200';
     const username = this.configService.get<string>('elasticsearch.username') || 'elastic';
     const password = this.configService.get<string>('elasticsearch.password') || 'variphi@2024';
     this.indexName = this.configService.get<string>('elasticsearch.index') || 'vision-ops-overview';
+    this.cameraIndexName =
+      this.configService.get<string>('elasticsearch.cameraIndex') ?? 'vision-ops-camera';
     const requestTimeout = this.configService.get<number>('elasticsearch.requestTimeout', 30000);
 
     const clientOptions: ClientOptions = {
@@ -30,6 +37,7 @@ export class ElasticService implements OnModuleInit {
 
   async onModuleInit() {
     await this.ensureIndexExists();
+    await this.ensureCameraIndexExists();
   }
 
   /**
@@ -70,6 +78,30 @@ export class ElasticService implements OnModuleInit {
       }
     } catch (error) {
       this.logger.error(`Error ensuring index exists: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Ensure the vision-ops-camera index exists for camera occupancy / person data
+   */
+  private async ensureCameraIndexExists() {
+    const indexName = this.cameraIndexName;
+    try {
+      const exists = await this.client.indices.exists({ index: indexName });
+      if (!exists) {
+        this.logger.log(`Creating Elasticsearch index: ${indexName}`);
+        await this.client.indices.create({
+          index: indexName,
+          settings: VISION_OPS_CAMERA_INDEX_SETTINGS,
+          mappings: VISION_OPS_CAMERA_INDEX_MAPPING,
+        });
+        this.logger.log(`Elasticsearch index '${indexName}' created successfully`);
+      } else {
+        this.logger.log(`Elasticsearch index '${indexName}' already exists`);
+      }
+    } catch (error) {
+      this.logger.error(`Error ensuring camera index exists: ${error.message}`, error);
       throw error;
     }
   }
@@ -159,5 +191,79 @@ export class ElasticService implements OnModuleInit {
    */
   getIndexName(): string {
     return this.indexName;
+  }
+
+  /**
+   * Get the camera index name (vision-ops-camera)
+   */
+  getCameraIndexName(): string {
+    return this.cameraIndexName;
+  }
+
+  /**
+   * Index a single camera occupancy document into vision-ops-camera
+   */
+  async indexCameraDocument(document: {
+    client_id?: string;
+    camera_id: string;
+    timestamp: string;
+    location?: string;
+    location_id?: string;
+    occupancy_capacity: number;
+    total_person: number;
+    person_data: Array<{ person_id: string; person_type: string; dwell_time: number }>;
+    unique_person: number;
+  }): Promise<void> {
+    try {
+      const body = {
+        ...document,
+        indexed_at: new Date().toISOString(),
+      };
+      await this.client.index({
+        index: this.cameraIndexName,
+        body,
+        refresh: 'wait_for',
+      });
+      this.logger.debug(`Camera document indexed - camera_id: ${document.camera_id}`);
+    } catch (error) {
+      this.logger.error(`Error indexing camera document: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Bulk index camera documents into vision-ops-camera
+   */
+  async bulkIndexCameraDocuments(
+    documents: Array<{
+      client_id?: string;
+      camera_id: string;
+      timestamp: string;
+      location?: string;
+      location_id?: string;
+      occupancy_capacity: number;
+      total_person: number;
+      person_data: Array<{ person_id: string; person_type: string; dwell_time: number }>;
+      unique_person: number;
+    }>,
+  ): Promise<void> {
+    if (documents.length === 0) return;
+    try {
+      const body = documents.flatMap((doc) => [
+        { index: { _index: this.cameraIndexName } },
+        { ...doc, indexed_at: new Date().toISOString() },
+      ]);
+      const response = await this.client.bulk({ body, refresh: 'wait_for' });
+      if (response.errors) {
+        const erroredItems = response.items.filter((item: any) => item.index?.error);
+        this.logger.error(`Bulk camera index had ${erroredItems.length} errors`);
+        erroredItems.forEach((item: any) => this.logger.error(JSON.stringify(item.index?.error)));
+      } else {
+        this.logger.log(`Bulk indexed ${documents.length} camera documents to ${this.cameraIndexName}`);
+      }
+    } catch (error) {
+      this.logger.error(`Error bulk indexing camera documents: ${error.message}`, error);
+      throw error;
+    }
   }
 }

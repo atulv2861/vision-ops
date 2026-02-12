@@ -20,13 +20,12 @@ export default () => ({
       initialRetryTime: parseInt(process.env.KAFKA_INITIAL_RETRY_TIME ?? '100', 10),
       multiplier: parseFloat(process.env.KAFKA_RETRY_MULTIPLIER ?? '2'),
     },
-    producer: {
-      delayBetweenMessages: parseInt(process.env.KAFKA_PRODUCER_DELAY_MS ?? '5000', 10), // 5 seconds default
-      autoProduceEnabled: process.env.KAFKA_AUTO_PRODUCE_ENABLED !== 'false', // Default: true
-      autoProduceInterval: parseInt(process.env.KAFKA_AUTO_PRODUCE_INTERVAL_MS ?? '10000', 10), // 10 seconds default
-    },
     topics: {
-      cameraEvents: process.env.KAFKA_TOPIC_CAMERA_EVENTS ?? 'visionops.camera.events.v1',
+      cameraOccupancy: process.env.KAFKA_TOPIC_CAMERA_OCCUPANCY ?? 'visionops.camera.occupancy.v1',
+    },
+    producer: {
+      cameraOccupancyDataPath:
+        process.env.KAFKA_CAMERA_OCCUPANCY_DATA_PATH ?? 'data/vision-ops-camera.json',
     },
   },
   elasticsearch: {
@@ -34,6 +33,7 @@ export default () => ({
     username: process.env.ELASTICSEARCH_USERNAME ?? 'elastic',
     password: process.env.ELASTICSEARCH_PASSWORD ?? 'variphi@2024',
     index: process.env.ELASTICSEARCH_INDEX ?? 'vision-ops-overview',
+    cameraIndex: process.env.ELASTICSEARCH_CAMERA_INDEX ?? 'vision-ops-camera',
     requestTimeout: parseInt(process.env.ELASTICSEARCH_REQUEST_TIMEOUT ?? '30000', 10),
   },
 });

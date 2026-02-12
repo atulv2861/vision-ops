@@ -6,6 +6,36 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class OverviewController {
   constructor(private readonly overviewService: OverviewService) { }
 
+  @Get('summary')
+  async getSummary() {
+    return this.overviewService.getSummary();
+  }
+
+  @Get('ai-patterns')
+  async getAiPattern() {
+    return this.overviewService.getAiPattern();
+  }
+
+  @Get('camera-network-status')
+  async getCameraNetworkStatus() {
+    return this.overviewService.getCameraNetworkStatus();
+  }
+
+  @Get('campus-traffic')
+  async getCampusTraffic() {
+    return this.overviewService.getCampusTraffic();
+  }
+
+  @Get('space-utilization')
+  async getSpaceUtilization() {
+    return this.overviewService.getSpaceUtilization();
+  }
+
+  @Get('security-access')
+  async getSecurityAccess() {
+    return this.overviewService.getGateSecurityStatus();
+  }
+  
   @Get()
   async getAll(
     @Query('from') from?: number,
@@ -58,33 +88,5 @@ export class OverviewController {
     return this.overviewService.getByZone();
   }
 
-  @Get('summary')
-  async getSummary() {
-    return this.overviewService.getSummary();
-  }
-
-  @Get('ai-patterns')
-  async getAiPattern() {
-    return this.overviewService.getAiPattern();
-  }
-
-  @Get('camera-network-status')
-  async getCameraNetworkStatus() {
-    return this.overviewService.getCameraNetworkStatus();
-  }
-
-  @Get('campus-traffic')
-  async getCampusTraffic() {
-    return this.overviewService.getCampusTraffic();
-  }
-
-  @Get('space-utilization')
-  async getSpaceUtilization() {
-    return this.overviewService.getSpaceUtilization();
-  }
-
-  @Get('security-access')
-  async getSecurityAccess() {
-    return this.overviewService.getGateSecurityStatus();
-  }
+  
 }
