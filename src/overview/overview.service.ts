@@ -29,6 +29,8 @@ export class OverviewService {
 
   /** Max buckets for terms agg so we return every person_type in the index. */
   private static readonly TERMS_AGG_SIZE_MAX = 65535;
+  /** Max result window for search queries (default Elasticsearch limit). */
+  private static readonly SIZE_MAX = 10000;
 
   /**
    * Get all person_type values and their count from camera index (all data present in DB).
@@ -253,7 +255,7 @@ export class OverviewService {
     }
   }
 
-  async getActiveAlerts(limit: number = 5) {
+  async getActiveAlerts(limit: number = 10) {
     try {
       const client = this.elasticService.getClient();
       const indexName = this.elasticService.getIndexName();
@@ -325,6 +327,86 @@ export class OverviewService {
 
     const days = Math.floor(hours / 24);
     return `${days} day${days > 1 ? 's' : ''} ago`;
+  }
+
+  async getCampusTraffic() {
+    try {
+      const client = this.elasticService.getClient();
+      const cameraIndexName = this.elasticService.getCameraIndexName();
+
+      const now = new Date();
+      // Start of the current day in UTC
+      const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
+
+      const response = await client.search({
+        index: cameraIndexName,
+        size: OverviewService.SIZE_MAX,
+        query: {
+          range: {
+            timestamp: {
+              gte: startOfDay.toISOString()
+            }
+          }
+        },
+        _source: ['timestamp', 'person_data']
+      });
+
+      const hits = response.hits.hits;
+
+      // Initialize hourly buckets (0-23)
+      const hourlyData: Record<number, { students: Set<string>, staff: Set<string> }> = {};
+      for (let i = 0; i < 24; i++) {
+        hourlyData[i] = { students: new Set(), staff: new Set() };
+      }
+
+      hits.forEach((hit: any) => {
+        const source = hit._source;
+        const timestamp = new Date(source.timestamp);
+        const hour = timestamp.getUTCHours();
+        const personData = source.person_data || [];
+
+        if (hourlyData[hour]) {
+          personData.forEach((p: any) => {
+            if (p.person_type === 'student') {
+              hourlyData[hour].students.add(p.person_id);
+            } else if (p.person_type === 'staff') {
+              hourlyData[hour].staff.add(p.person_id);
+            }
+          });
+        }
+      });
+
+      // Format response
+      const result = [];
+      const currentHour = now.getUTCHours();
+
+      // We only want to return data up to the current hour + 12 hours window or full day depending on requirements.
+      // Based on user request "6AM" etc., let's return all hours that have data or filler within reasonable range?
+      // User sample showed 6AM to 4PM. Let's return 6AM to current hour for now, or full 24h?
+      // Let's return only hours with non-zero potential or all hours of the day?
+      // Defaulting to "active hours" 6AM to 10PM for visualization? 
+      // Or simply filtering out future hours if we want "up to now".
+
+      for (let i = 6; i <= 22; i++) { // Arbitrary display range 6 AM to 10 PM
+        const hourLabel = i === 12 ? '12PM' : i > 12 ? `${i - 12}PM` : `${i}AM`;
+
+        // Only include past/current hours (optional, but good for "traffic so far")
+        if (i <= currentHour) {
+          result.push({
+            id: randomUUID(),
+            time: hourLabel,
+            students: hourlyData[i].students.size,
+            staff: hourlyData[i].staff.size
+          });
+        }
+      }
+
+      return result;
+
+    } catch (error) {
+      this.logger.error('Error getting campus traffic:', error);
+      return [];
+    }
   }
 }
 

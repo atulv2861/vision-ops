@@ -20,10 +20,10 @@ export class OverviewController {
     return this.overviewService.getCameraNetworkStatus();
   }
 
-  // @Get('campus-traffic')
-  // async getCampusTraffic() {
-  //   return this.overviewService.getCampusTraffic();
-  // }
+  @Get('campus-traffic')
+  async getCampusTraffic() {
+    return this.overviewService.getCampusTraffic();
+  }
 
   @Get('space-utilization')
   async getSpaceUtilization() {
