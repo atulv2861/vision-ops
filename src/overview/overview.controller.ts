@@ -25,14 +25,18 @@ export class OverviewController {
   //   return this.overviewService.getCampusTraffic();
   // }
 
-  // @Get('space-utilization')
-  // async getSpaceUtilization() {
-  //   return this.overviewService.getSpaceUtilization();
-  // }
+  @Get('space-utilization')
+  async getSpaceUtilization() {
+    return this.overviewService.getSpaceUtilization();
+  }
 
   @Get('security-access')
   async getSecurityAccess() {
     return this.overviewService.getGateSecurityStatus();
   }
 
+  @Get('active-alerts')
+  async getActiveAlerts(@Query('limit') limit?: number) {
+    return this.overviewService.getActiveAlerts(limit ? Number(limit) : 5);
+  }
 }
