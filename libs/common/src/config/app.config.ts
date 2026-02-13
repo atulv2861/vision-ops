@@ -3,7 +3,9 @@ export default () => ({
   nodeEnv: process.env.NODE_ENV ?? 'development',
   apiPrefix: process.env.API_PREFIX ?? 'api',
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:3000'],
+    origin: process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim()).filter(Boolean)
+      : ['http://localhost:3000', 'http://localhost:5173'],
     credentials: process.env.CORS_CREDENTIALS === 'true',
   },
   logging: {
@@ -24,8 +26,11 @@ export default () => ({
       cameraOccupancy: process.env.KAFKA_TOPIC_CAMERA_OCCUPANCY ?? 'visionops.camera.occupancy.v1',
     },
     producer: {
+      clientId: process.env.KAFKA_PRODUCER_CLIENT_ID ?? 'vision-ops-producer',
       cameraOccupancyDataPath:
         process.env.KAFKA_CAMERA_OCCUPANCY_DATA_PATH ?? 'data/vision-ops-camera.json',
+      startDelayMs: parseInt(process.env.KAFKA_PRODUCER_START_DELAY_MS ?? '5000', 10),
+      intervalMs: parseInt(process.env.KAFKA_PRODUCER_INTERVAL_MS ?? '5000', 10),
     },
   },
   elasticsearch: {

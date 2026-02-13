@@ -44,12 +44,13 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async connect() {
+    const broker = this.configService.get<string>('kafka.broker') || 'localhost:9092';
     try {
       await this.consumer.connect();
-      this.logger.log('Kafka consumer connected successfully');
+      this.logger.log(`Kafka consumer connected to ${broker}`);
       return true;
-    } catch (error) {
-      this.logger.error('Failed to connect Kafka consumer', error);
+    } catch (error: any) {
+      this.logger.error(`Failed to connect Kafka consumer to ${broker}: ${error?.message ?? error}`);
       return false;
     }
   }
@@ -86,8 +87,8 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   private async subscribe() {
     try {
       const cameraOccupancy = this.configService.get<string>('kafka.topics.cameraOccupancy') ?? 'visionops.camera.occupancy.v1';
-      await this.consumer.subscribe({ topics: [cameraOccupancy], fromBeginning: false });
-      this.logger.log(`Subscribed to topic: ${cameraOccupancy}`);
+      await this.consumer.subscribe({ topics: [cameraOccupancy], fromBeginning: true });
+      this.logger.log(`Subscribed to topic: ${cameraOccupancy} (fromBeginning: true)`);
     } catch (error) {
       this.logger.error('Failed to subscribe to topic', error);
       throw error;

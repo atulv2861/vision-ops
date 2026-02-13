@@ -11,10 +11,14 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   private kafka: Kafka;
   private producer: Producer;
   private isConnected = false;
+  private produceIntervalId: ReturnType<typeof setInterval> | null = null;
 
   constructor(private readonly configService: ConfigService) {
     const broker = this.configService.get<string>('kafka.broker') || 'localhost:9092';
-    const clientId = this.configService.get<string>('kafka.clientId') || 'vision-ops-producer';
+    const clientId =
+      this.configService.get<string>('kafka.producer.clientId') ||
+      this.configService.get<string>('kafka.clientId') ||
+      'vision-ops-producer';
     const connectionTimeout = this.configService.get<number>('kafka.connectionTimeout', 3000);
     const requestTimeout = this.configService.get<number>('kafka.requestTimeout', 30000);
     const retryConfig = this.configService.get<any>('kafka.retry', {
@@ -52,26 +56,40 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * After connect, produce camera occupancy from vision-ops-camera.json once.
+   * After connect, start producing camera occupancy every N seconds until app stops.
+   * Initial delay gives the consumer time to connect and subscribe first.
    */
   private startCameraOccupancyProduce() {
-    setTimeout(
-      () =>
-        this.produceCameraOccupancyFromFile().catch((e) =>
-          this.logger.error('Camera occupancy produce failed', e),
-        ),
-      5000,
-    );
+    const delayMs = this.configService.get<number>('kafka.producer.startDelayMs', 5000);
+    const intervalMs = this.configService.get<number>('kafka.producer.intervalMs', 5000);
+    this.logger.log(`Producer: first run in ${delayMs}ms, then every ${intervalMs}ms`);
+    const run = () =>
+      this.produceCameraOccupancyFromFile().catch((e) =>
+        this.logger.error('Camera occupancy produce failed', e),
+      );
+    setTimeout(() => {
+      run();
+      this.produceIntervalId = setInterval(run, intervalMs);
+    }, delayMs);
+  }
+
+  private stopCameraOccupancyProduce() {
+    if (this.produceIntervalId !== null) {
+      clearInterval(this.produceIntervalId);
+      this.produceIntervalId = null;
+      this.logger.log('Producer: stopped periodic produce');
+    }
   }
 
   private async connect() {
+    const broker = this.configService.get<string>('kafka.broker') || 'localhost:9092';
     try {
       await this.producer.connect();
       this.isConnected = true;
-      this.logger.log('Kafka producer connected successfully');
+      this.logger.log(`Kafka producer connected to ${broker}`);
       return true;
-    } catch (error) {
-      this.logger.error('Failed to connect Kafka producer', error);
+    } catch (error: any) {
+      this.logger.error(`Failed to connect Kafka producer to ${broker}: ${error?.message ?? error}`);
       this.isConnected = false;
       return false;
     }
@@ -106,6 +124,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async disconnect() {
+    this.stopCameraOccupancyProduce();
     try {
       if (this.producer && this.isConnected) {
         await this.producer.disconnect();
