@@ -104,3 +104,16 @@ Invoke-RestMethod -Uri "http://localhost:3000/api/overview/stats" -Method Get
 # Get Space Utilization
 Invoke-RestMethod -Uri "http://localhost:3000/api/overview/space-utilization" -Method Get
 ```
+
+## 7. Get Active Alerts
+
+```bash
+# Get active alerts
+curl -X GET "http://localhost:3000/api/overview/active-alerts"
+```
+
+# Get campus traffic
+curl -X GET "http://localhost:3000/api/overview/campus-traffic"
+
+# Get security access
+curl -X GET "http://localhost:3000/api/overview/security-access"
