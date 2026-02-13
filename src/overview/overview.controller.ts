@@ -15,10 +15,10 @@ export class OverviewController {
   //   return this.overviewService.getAiPattern();
   // }
 
-  // @Get('camera-network-status')
-  // async getCameraNetworkStatus() {
-  //   return this.overviewService.getCameraNetworkStatus();
-  // }
+  @Get('camera-network-status')
+  async getCameraNetworkStatus() {
+    return this.overviewService.getCameraNetworkStatus();
+  }
 
   // @Get('campus-traffic')
   // async getCampusTraffic() {
@@ -34,5 +34,5 @@ export class OverviewController {
   // async getSecurityAccess() {
   //   return this.overviewService.getGateSecurityStatus();
   // }
-  
+
 }

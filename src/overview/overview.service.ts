@@ -23,10 +23,10 @@ export class OverviewService {
   constructor(
     private readonly elasticService: ElasticService,
     private readonly utilsService: UtilsService,
-  ) {}
+  ) { }
 
 
- 
+
   /** Max buckets for terms agg so we return every person_type in the index. */
   private static readonly TERMS_AGG_SIZE_MAX = 65535;
 
@@ -82,4 +82,43 @@ export class OverviewService {
     }
   }
 
+  async getCameraNetworkStatus() {
+    try {
+      const client = this.elasticService.getClient();
+      const cameraIndexName = this.elasticService.getCameraIndexName();
+
+      const response = await client.search({
+        index: cameraIndexName,
+        size: 0,
+        aggs: {
+          by_location: {
+            terms: {
+              field: 'location',
+              size: 100
+            },
+            aggs: {
+              unique_cameras: {
+                cardinality: {
+                  field: 'camera_id.keyword'
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const buckets = (response.aggregations as any)?.by_location?.buckets || [];
+
+      return buckets.map((bucket: any) => ({
+        id: randomUUID(),
+        location: bucket.key,
+        activeCameras: bucket.unique_cameras?.value || 0,
+        status: 'online'
+      }));
+
+    } catch (error) {
+      this.logger.error('Error getting camera network status:', error);
+      return [];
+    }
+  }
 }
