@@ -94,7 +94,7 @@ export class OverviewService {
           by_location: {
             terms: {
               field: 'location',
-              size: 100
+              size: OverviewService.TERMS_AGG_SIZE_MAX
             },
             aggs: {
               unique_cameras: {
@@ -121,4 +121,68 @@ export class OverviewService {
       return [];
     }
   }
+
+  async getGateSecurityStatus() {
+    try {
+      const client = this.elasticService.getClient();
+      const cameraIndexName = this.elasticService.getCameraIndexName();
+
+      const response = await client.search({
+        index: cameraIndexName,
+        size: 0,
+        aggs: {
+          by_location: {
+            terms: {
+              field: 'location', // Group by location (acting as "Entrance/Gate")
+              size: 50
+            },
+            aggs: {
+              latest_record: {
+                top_hits: {
+                  size: 1,
+                  sort: [{ timestamp: { order: 'desc' } }],
+                  _source: ['person_data', 'location']
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const buckets = (response.aggregations as any)?.by_location?.buckets || [];
+
+      return buckets.map((bucket: any) => {
+        const hit = bucket.latest_record.hits.hits[0]?._source;
+        const location = hit?.location || bucket.key;
+        const personData = hit?.person_data || [];
+
+        // Count guards present
+        const guardsPresent = personData.filter((p: any) => p?.person_type === 'security_guard').length;
+
+        // Determine guards needed (Default to 1 until data available in index)
+        const guardsNeeded = 1;
+
+        // Determine status
+        let status = 'covered';
+        if (guardsPresent === 0) {
+          status = 'uncovered';
+        } else if (guardsPresent < guardsNeeded) {
+          status = 'low-coverage';
+        }
+
+        return {
+          id: randomUUID(),
+          name: location,
+          guardsPresent,
+          guardsNeeded,
+          status
+        };
+      });
+
+    } catch (error) {
+      this.logger.error('Error getting gate security status:', error);
+      return [];
+    }
+  }
 }
+
