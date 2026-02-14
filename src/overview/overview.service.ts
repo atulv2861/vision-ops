@@ -258,18 +258,14 @@ export class OverviewService {
   async getActiveAlerts(limit: number = 10) {
     try {
       const client = this.elasticService.getClient();
-      const indexName = this.elasticService.getIndexName();
+      const cameraIndexName = this.elasticService.getCameraIndexName();
 
       const response = await client.search({
-        index: indexName,
+        index: cameraIndexName,
         size: limit,
         sort: [{ timestamp: { order: 'desc' } }],
         query: {
-          bool: {
-            must: [
-              { exists: { field: 'severity' } }
-            ]
-          }
+          exists: { field: 'occupancy_capacity' }
         }
       });
 
@@ -278,21 +274,21 @@ export class OverviewService {
       return hits.map((hit: any) => {
         const source = hit._source;
         const timestamp = source.timestamp;
+        const totalPerson = source.total_person || 0;
+        const capacity = source.occupancy_capacity || 1; // Avoid division by zero
+        const percentage = (totalPerson / capacity) * 100;
 
         let severity = 'Low';
-        const value = parseFloat(source.value);
-
-        if (!isNaN(value)) {
-          if (value > 80) severity = 'High';
-          else if (value >= 50) severity = 'Medium';
-        } else if (source.severity) {
-          severity = source.severity;
+        if (percentage > 80) {
+          severity = 'High';
+        } else if (percentage > 60) {
+          severity = 'Medium';
         }
 
         return {
-          id: source.event_id || hit._id,
+          id: source.client_id || hit._id,
           title: source.location || 'Unknown Location',
-          description: source.metric_name || 'Alert',
+          description: `Occupancy: ${totalPerson}/${capacity} (${percentage.toFixed(1)}%)`,
           severity: severity,
           timestamp: timestamp,
           timeAgo: this.formatTimeAgo(timestamp)
