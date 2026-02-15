@@ -6,7 +6,7 @@
     "location": "Main Campus",
     "location_id": "a1e4b8c3-5d2f-4a7e-9b1c-6f8d3e2a7b5c",
     "occupancy_capacity": 25,
-    "total_person": 6,
+    "total_person": 16,
     "person_data": [
       {"person_id": "7208977664", "person_type": "maintenance", "dwell_time": 114},
       {"person_id": "2389159733", "person_type": "contractor", "dwell_time": 98},
@@ -41,7 +41,7 @@
     "location": "Playground",
     "location_id": "c3g6d0e5-7f4h-6c9g-1d3e-8h0f5g4c9d7e",
     "occupancy_capacity": 50,
-    "total_person": 7,
+    "total_person": 47,
     "person_data": [
       {"person_id": "7766554433", "person_type": "coach", "dwell_time": 130},
       {"person_id": "5544332211", "person_type": "security_guard", "dwell_time": 76},

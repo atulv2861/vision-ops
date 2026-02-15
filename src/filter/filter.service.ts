@@ -67,7 +67,6 @@ async getCameraByLocation(location_id: string) {
 
         // Extract unique cameras using a Map to avoid duplicates
         const cameraMap = new Map();
-        let index=0;
         response.hits.hits.forEach((hit: any) => {
             const source = hit._source;
 
