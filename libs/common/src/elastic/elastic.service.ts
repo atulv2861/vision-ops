@@ -206,6 +206,8 @@ export class ElasticService implements OnModuleInit {
   async indexCameraDocument(document: {
     client_id?: string;
     camera_id: string;
+    name?: string;
+    status?: string;
     timestamp: string;
     location?: string;
     location_id?: string;
@@ -238,6 +240,8 @@ export class ElasticService implements OnModuleInit {
     documents: Array<{
       client_id?: string;
       camera_id: string;
+      name?: string;
+      status?: string;
       timestamp: string;
       location?: string;
       location_id?: string;

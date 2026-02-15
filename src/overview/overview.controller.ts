@@ -10,29 +10,29 @@ export class OverviewController {
     return this.overviewService.getSummary();
   }
 
-  // @Get('ai-patterns')
-  // async getAiPattern() {
-  //   return this.overviewService.getAiPattern();
-  // }
+  @Get('ai-patterns')
+  async getAiPattern() {
+    return this.overviewService.getAiPatterns();
+  }
 
-  // @Get('camera-network-status')
-  // async getCameraNetworkStatus() {
-  //   return this.overviewService.getCameraNetworkStatus();
-  // }
+  @Get('camera-network-status')
+  async getCameraNetworkStatus() {
+    return this.overviewService.getCameraNetworkStatus();
+  }
 
-  // @Get('campus-traffic')
-  // async getCampusTraffic() {
-  //   return this.overviewService.getCampusTraffic();
-  // }
+  @Get('campus-traffic')
+  async getCampusTraffic() {
+    return this.overviewService.getCampusTraffic();
+  }
 
-  // @Get('space-utilization')
-  // async getSpaceUtilization() {
-  //   return this.overviewService.getSpaceUtilization();
-  // }
+  @Get('space-utilization')
+  async getSpaceUtilization() {
+    return this.overviewService.getSpaceUtilization();
+  }
 
-  // @Get('security-access')
-  // async getSecurityAccess() {
-  //   return this.overviewService.getGateSecurityStatus();
-  // }
+  @Get('security-access')
+  async getSecurityAccess() {
+    return this.overviewService.getGateSecurityStatus();
+  }
   
 }

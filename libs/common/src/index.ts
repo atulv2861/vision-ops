@@ -4,6 +4,8 @@
  */
 
 export { ConfigModule, appConfig } from './config';
+export { EnrichmentModule, CameraDetailsService } from './enrichment';
+export type { CameraDetails } from './enrichment';
 export {
   ElasticModule,
   ElasticService,

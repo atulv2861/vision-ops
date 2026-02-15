@@ -9,6 +9,8 @@ export const VISION_OPS_CAMERA_INDEX_MAPPING = {
   properties: {
     client_id: { type: 'keyword' as const },
     camera_id: { type: 'keyword' as const },
+    name: { type: 'keyword' as const },
+    status: { type: 'keyword' as const },
     timestamp: {
       type: 'date' as const,
       format: 'strict_date_optional_time||yyyy-MM-dd HH:mm:ss||epoch_millis',

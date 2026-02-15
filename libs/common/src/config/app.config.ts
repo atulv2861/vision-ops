@@ -33,6 +33,13 @@ export default () => ({
       intervalMs: parseInt(process.env.KAFKA_PRODUCER_INTERVAL_MS ?? '5000', 10),
     },
   },
+  filter: {
+    locationApiUrl: process.env.FILTER_LOCATION_API_URL ?? '',
+    locationApiTimeoutMs: parseInt(process.env.FILTER_LOCATION_API_TIMEOUT_MS ?? '10000', 10),
+    cameraDetailsApiUrl: process.env.FILTER_CAMERA_DETAILS_API_URL ?? 'http://localhost:4000',
+    cameraDetailsApiTimeoutMs: parseInt(process.env.FILTER_CAMERA_DETAILS_API_TIMEOUT_MS ?? '5000', 10),
+    cameraDetailsCacheTtlMs: parseInt(process.env.FILTER_CAMERA_DETAILS_CACHE_TTL_MS ?? '600000', 10),
+  },
   elasticsearch: {
     node: process.env.ELASTICSEARCH_NODE ?? 'http://34.173.116.41:9200',
     username: process.env.ELASTICSEARCH_USERNAME ?? 'elastic',

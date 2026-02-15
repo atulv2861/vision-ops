@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit, OnModuleDestroy, Logger, Inject, forwardRef }
 import { ConfigService } from '@nestjs/config';
 import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
 import { ElasticService } from '../elastic/elastic.service';
+import { CameraDetailsService } from '../enrichment/camera-details.service';
 
 @Injectable()
 export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
@@ -14,6 +15,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     private readonly configService: ConfigService,
     @Inject(forwardRef(() => ElasticService))
     private readonly elasticService: ElasticService,
+    private readonly cameraDetailsService: CameraDetailsService,
   ) {
     const broker = this.configService.get<string>('kafka.broker') || 'localhost:9092';
     const clientId = this.configService.get<string>('kafka.clientId') || 'vision-ops-consumer';
@@ -207,7 +209,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * Process camera occupancy message: index into vision-ops-camera.
+   * Process camera occupancy message: enrich with camera details API, then index into vision-ops-camera.
    */
   private async processCameraOccupancyEvent(
     data: any,
@@ -215,17 +217,21 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   ) {
     this.logger.debug('Processing camera occupancy', { camera_id: data?.camera_id, offset: metadata.offset });
     try {
-      await this.elasticService.indexCameraDocument({
-        client_id: data.client_id,
+      const details = await this.cameraDetailsService.getByCameraId(data?.camera_id);
+      const merged = {
+        client_id: details?.client_id,
         camera_id: data.camera_id,
+        name: details?.name,
+        status: details?.status,
         timestamp: data.timestamp,
-        location: data.location,
-        location_id: data.location_id,
+        location: details?.location ?? data.location,
+        location_id: details?.location_id ?? data.location_id,
         occupancy_capacity: data.occupancy_capacity ?? 0,
         total_person: data.total_person ?? 0,
         person_data: Array.isArray(data.person_data) ? data.person_data : [],
         unique_person: data.unique_person ?? 0,
-      });
+      };
+      await this.elasticService.indexCameraDocument(merged);
       this.logger.log(`Camera occupancy indexed - camera_id: ${data?.camera_id}, offset: ${metadata.offset}`);
     } catch (error: any) {
       this.logger.error(`Error indexing camera occupancy: ${error.message}`, { camera_id: data?.camera_id, offset: metadata.offset });
