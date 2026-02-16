@@ -48,15 +48,15 @@ export class OverviewService {
       if (client_id) {
         match_query.push({ match: { client_id: client_id } });
       }
-      if (camera_id) {
-        match_query.push({ match: { camera_id: camera_id } });
-      }
-      if (location_id) {
-        match_query.push({ match: { location_id: location_id } });
-      }
-      if (from) {
-        match_query.push({ range: { timestamp: { gte: from, lte: to } } });
-      }
+      // if (camera_id) {
+      //   match_query.push({ match: { camera_id: camera_id } });
+      // }
+      // if (location_id) {
+      //   match_query.push({ match: { location_id: location_id } });
+      // }
+      // if (from) {
+      //   match_query.push({ range: { timestamp: { gte: from, lte: to } } });
+      // }
 
 
       const response = await client.search({
