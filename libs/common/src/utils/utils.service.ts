@@ -46,4 +46,22 @@ export class UtilsService {
         return total > 0 ? `${current} of ${total} total` : `${current}`;
     }
   }
+
+  createQuery(client_id: string, camera_id?: string, location_id?: string, from?: string, to?: string) {
+    const match_query = [];
+    if (client_id && client_id.trim() !== '' && client_id.trim() !== 'null') {
+      match_query.push({ match: { client_id: client_id } });
+    }
+    if (camera_id && camera_id.trim() !== '' && camera_id.trim() !== 'null') {
+      match_query.push({ match: { camera_id: camera_id } });
+    }
+  
+    if (location_id && location_id.trim() !== '' && location_id.trim() !== 'null') {
+      match_query.push({ match: { location_id: location_id } });
+    }
+    // if (from && from.trim() !== '' && from.trim() !== 'null') {
+    //   match_query.push({ range: { timestamp: { gte: from, lte: to } } });
+    // }
+    return match_query;
+  }
 }

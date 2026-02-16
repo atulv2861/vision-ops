@@ -43,21 +43,7 @@ export class OverviewService {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-
-      const match_query = [];
-      if (client_id) {
-        match_query.push({ match: { client_id: client_id } });
-      }
-      // if (camera_id) {
-      //   match_query.push({ match: { camera_id: camera_id } });
-      // }
-      // if (location_id) {
-      //   match_query.push({ match: { location_id: location_id } });
-      // }
-      // if (from) {
-      //   match_query.push({ range: { timestamp: { gte: from, lte: to } } });
-      // }
-
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
 
       const response = await client.search({
         index: cameraIndexName,
@@ -226,14 +212,14 @@ export class OverviewService {
       const now = new Date();
       // Start of the current day in UTC
       const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
-
       const response = await client.search({
         index: cameraIndexName,
-        size: OverviewService.TERMS_AGG_SIZE_MAX,
+        size: 1000,
         query: {
           range: {
             timestamp: {
-              gte: startOfDay.toISOString()
+              gte: "2026-02-12 00:00:00",
+              lte: "2026-02-17 23:59:59"
             }
           }
         },
@@ -241,7 +227,7 @@ export class OverviewService {
       });
 
       const hits = response.hits.hits;
-
+      console.log("hits",hits);
       // Initialize hourly buckets (0-23)
       const hourlyData: Record<number, { students: Set<string>, staff: Set<string> }> = {};
       for (let i = 0; i < 24; i++) {
@@ -290,11 +276,11 @@ export class OverviewService {
         }
       }
       
-      return result.length > 0 ? result : this.mockData;
+      return result;
 
     } catch (error) {
       this.logger.error('Error getting campus traffic:', error);
-      return this.mockData;
+      return [];
     }
   }
 
