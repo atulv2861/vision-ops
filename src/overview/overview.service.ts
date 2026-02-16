@@ -34,15 +34,39 @@ export class OverviewService {
    * Get all person_type values and their count from camera index (all data present in DB).
    * Returns one item per person_type with title = type, value = count for that type.
    */
-  async getSummary() {
+  async getSummary(
+    client_id: string, 
+    location_id: string, 
+    from: string,
+    to: string,
+    camera_id?: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
 
+      const match_query = [];
+      if (client_id) {
+        match_query.push({ match: { client_id: client_id } });
+      }
+      if (camera_id) {
+        match_query.push({ match: { camera_id: camera_id } });
+      }
+      if (location_id) {
+        match_query.push({ match: { location_id: location_id } });
+      }
+      if (from) {
+        match_query.push({ range: { timestamp: { gte: from, lte: to } } });
+      }
+
+
       const response = await client.search({
         index: cameraIndexName,
         size: 0,
-        query: { match_all: {} },
+        query: {
+          bool: {
+            must: match_query,
+          },
+        },
         aggs: {
           by_person_type: {
             nested: { path: 'person_data' },
@@ -304,8 +328,8 @@ export class OverviewService {
       return buckets.map((bucket: any) => ({
         id: randomUUID(),
         location: bucket.key,
-        activeCameras: bucket.unique_cameras?.value || 0,
-        status: 'online'
+        activeCameras: bucket.unique_cameras?.status=="ACTIVE" ? 1 : 1,
+        status: bucket.unique_cameras?.status=="ACTIVE" ? 'online' : 'offline'
       }));
 
     } catch (error) {

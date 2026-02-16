@@ -6,16 +6,29 @@
     "location": "Main Campus",
     "location_id": "a1e4b8c3-5d2f-4a7e-9b1c-6f8d3e2a7b5c",
     "occupancy_capacity": 25,
-    "total_person": 16,
+    "total_person": 11,
     "person_data": [
       {"person_id": "7208977664", "person_type": "maintenance", "dwell_time": 114},
       {"person_id": "2389159733", "person_type": "contractor", "dwell_time": 98},
       {"person_id": "4263705055", "person_type": "staff", "dwell_time": 14},
-      {"person_id": "2294745811", "person_type": "security_guard", "dwell_time": 97},
+      {"person_id": "2294745811", "person_type": "security_guard", "dwell_time": 97}
+    ],
+    "unique_person": 11
+  },
+  {
+    "client_id": "c5a7e9b1-3d4f-4a8e-9c2b-6f7d3e1a8b5c",
+    "camera_id": "6991ae2796f50a2873f3567f",
+    "timestamp": "2026-02-12 08:00:00",
+    "location": "Main Campus",
+    "location_id": "a1e4b8c3-5d2f-4a7e-9b1c-6f8d3e2a7b5c",
+    "occupancy_capacity": 25,
+    "total_person": 16,
+    "person_data": [
+      {"person_id": "7208977664", "person_type": "maintenance", "dwell_time": 114},      
       {"person_id": "9988776655", "person_type": "faculty", "dwell_time": 53},
       {"person_id": "1122334455", "person_type": "student", "dwell_time": 76}
     ],
-    "unique_person": 6
+    "unique_person": 3
   },
   {
     "client_id": "d6b8f0c2-4e5g-5b9f-0d3c-7g8e4f2b9c6d",
@@ -86,5 +99,22 @@
       {"person_id": "0123456789", "person_type": "student", "dwell_time": 27}
     ],
     "unique_person": 6
+  },
+  {
+    "client_id": "g9e1i3f5-7h8j-8e2i-3g6f-0j1h7i2e9f0g",
+    "camera_id": "6992075996f50a2873f35684",
+    "timestamp": "2026-02-12 09:00:00",
+    "location": "Cafeteria",
+    "location_id": "e5i8f2g7-9h6j-8e1i-3f5g-0j2h7i6e1f9g",
+    "occupancy_capacity": 35,
+    "total_person": 5,
+    "person_data": [
+      {"person_id": "5678901234", "person_type": "contractor", "dwell_time": 82},
+      {"person_id": "6789012345", "person_type": "security_guard", "dwell_time": 93},
+      {"person_id": "7890123456", "person_type": "visitor", "dwell_time": 11},
+      {"person_id": "8901234567", "person_type": "maintenance", "dwell_time": 54},
+      {"person_id": "9012345678", "person_type": "staff", "dwell_time": 39}
+    ],
+    "unique_person": 5
   }
 ]

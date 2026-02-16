@@ -88,8 +88,8 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
 
   private async subscribe() {
     try {
-      const cameraOccupancy = this.configService.get<string>('kafka.topics.cameraOccupancy') ?? 'visionops.camera.occupancy.v1';
-      await this.consumer.subscribe({ topics: [cameraOccupancy], fromBeginning: true });
+      const cameraOccupancy = this.configService.get<string>('kafka.topics.cameraOccupancy') ?? 'visionops.camera.v1';
+      await this.consumer.subscribe({ topics: [cameraOccupancy], fromBeginning: false });
       this.logger.log(`Subscribed to topic: ${cameraOccupancy} (fromBeginning: true)`);
     } catch (error) {
       this.logger.error('Failed to subscribe to topic', error);
@@ -218,18 +218,19 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     this.logger.debug('Processing camera occupancy', { camera_id: data?.camera_id, offset: metadata.offset });
     try {
       const details = await this.cameraDetailsService.getByCameraId(data?.camera_id);
+      // Build from Kafka payload first so total_person, occupancy_capacity always match the JSON; then overlay only API enrichment fields.
       const merged = {
-        client_id: details?.client_id,
+        client_id: details?.client_id ?? data.client_id,
         camera_id: data.camera_id,
-        name: details?.name,
-        status: details?.status,
+        name: details?.name ?? data.name ?? '',
+        status: details?.status ?? data.status ?? '',
         timestamp: data.timestamp,
         location: details?.location ?? data.location,
         location_id: details?.location_id ?? data.location_id,
-        occupancy_capacity: data.occupancy_capacity ?? 0,
-        total_person: data.total_person ?? 0,
+        occupancy_capacity: Number(data.occupancy_capacity) || 0,
+        total_person: Number(data.total_person) || 0,
         person_data: Array.isArray(data.person_data) ? data.person_data : [],
-        unique_person: data.unique_person ?? 0,
+        unique_person: Number(data.unique_person) || 0,
       };
       await this.elasticService.indexCameraDocument(merged);
       this.logger.log(`Camera occupancy indexed - camera_id: ${data?.camera_id}, offset: ${metadata.offset}`);

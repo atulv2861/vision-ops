@@ -219,6 +219,8 @@ export class ElasticService implements OnModuleInit {
     try {
       const body = {
         ...document,
+        name: document.name ?? '',
+        status: document.status ?? '',
         indexed_at: new Date().toISOString(),
       };
       await this.client.index({
