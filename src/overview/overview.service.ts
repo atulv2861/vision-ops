@@ -23,10 +23,10 @@ export class OverviewService {
   constructor(
     private readonly elasticService: ElasticService,
     private readonly utilsService: UtilsService,
-  ) {}
+  ) { }
 
 
- 
+
   /** Max buckets for terms agg so we return every person_type in the index. */
   private static readonly TERMS_AGG_SIZE_MAX = 65535;
 
@@ -35,15 +35,15 @@ export class OverviewService {
    * Returns one item per person_type with title = type, value = count for that type.
    */
   async getSummary(
-    client_id: string, 
-    location_id: string, 
+    client_id: string,
+    location_id: string,
     from: string,
     to: string,
     camera_id?: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);
 
       const response = await client.search({
         index: cameraIndexName,
@@ -92,16 +92,25 @@ export class OverviewService {
     }
   }
 
-  async getAiPatterns(limit: number = 10) {
+  async getAiPatterns(client_id: string,
+    location_id: string,
+    from: string,
+    to: string,
+    camera_id?: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);
 
       // Get all data grouped by unique locations
       const response = await client.search({
         index: cameraIndexName,
         size: 0,
-        query: { match_all: {} },
+        query: {
+          bool: {
+            must: match_query,
+          },
+        },
         aggs: {
           unique_locations: {
             terms: {
@@ -126,13 +135,13 @@ export class OverviewService {
 
       // Process the aggregation results
       const locationBuckets = (response.aggregations as Record<string, { buckets?: unknown[] }>)?.unique_locations?.buckets ?? [];
-      
+
       const alerts = locationBuckets.map((bucket: any) => {
         const latestDoc = bucket.latest_document.hits.hits[0];
-        
+
         // Check if there's a document for this location
         if (!latestDoc) return null;
-        
+
         const source = latestDoc._source;
         const timestamp = source.timestamp;
         const totalPerson = source.total_person || 0;
@@ -156,7 +165,7 @@ export class OverviewService {
         };
       })
 
-      return alerts.slice(0, limit); // Limit the results
+      return alerts.slice(0, 5); // Limit the results
 
     } catch (error) {
       this.logger.error('Error getting active alerts:', error);
@@ -204,22 +213,32 @@ export class OverviewService {
     { time: '4PM', students: 30, staff: 20 }
   ];
 
-  async getCampusTraffic() {
+  async getCampusTraffic(client_id: string,
+    location_id: string,
+    from: string,
+    to: string,
+    camera_id?: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);
 
       const now = new Date();
       // Start of the current day in UTC
       const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
-      console.log("startOfDay",startOfDay);
+      console.log("startOfDay", startOfDay);
       const response = await client.search({
         index: cameraIndexName,
         size: 1000,
         query: {
-          range: {
-            timestamp: {
-              gte: "2026-02-12 00:00:00"
+          bool: {
+            must: match_query,
+            filter: {
+              range: {
+                timestamp: {
+                  gte: "2026-02-12 00:00:00"
+                }
+              }
             }
           }
         },
@@ -252,7 +271,7 @@ export class OverviewService {
           });
         }
       });
-      console.log("hourlyData",hourlyData);
+      console.log("hourlyData", hourlyData);
       // Format response
       const result = [];
       const currentHour = now.getUTCHours();
@@ -269,15 +288,15 @@ export class OverviewService {
 
         // Only include past/current hours (optional, but good for "traffic so far")
         //if (i <= currentHour) {
-          result.push({
-            id: randomUUID(),
-            time: hourLabel,
-            students: hourlyData[i].students.size,
-            staff: hourlyData[i].staff.size
-          });
+        result.push({
+          id: randomUUID(),
+          time: hourLabel,
+          students: hourlyData[i].students.size,
+          staff: hourlyData[i].staff.size
+        });
         //}
       }
-      
+
       return result;
 
     } catch (error) {
@@ -286,10 +305,15 @@ export class OverviewService {
     }
   }
 
-  async getCameraNetworkStatus() {
+  async getCameraNetworkStatus(client_id: string,
+    location_id: string,
+    from: string,
+    to: string,
+    camera_id?: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);
 
       const response = await client.search({
         index: cameraIndexName,
@@ -316,8 +340,8 @@ export class OverviewService {
       return buckets.map((bucket: any) => ({
         id: randomUUID(),
         location: bucket.key,
-        activeCameras: bucket.unique_cameras?.status=="ACTIVE" ? 1 : 1,
-        status: bucket.unique_cameras?.status=="ACTIVE" ? 'online' : 'offline'
+        activeCameras: bucket.unique_cameras?.status == "ACTIVE" ? 1 : 1,
+        status: bucket.unique_cameras?.status == "ACTIVE" ? 'online' : 'offline'
       }));
 
     } catch (error) {
@@ -327,10 +351,15 @@ export class OverviewService {
   }
 
 
-  async getSpaceUtilization() {
+  async getSpaceUtilization(client_id: string,
+    location_id: string,
+    from: string,
+    to: string,
+    camera_id?: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);
 
       // Static map for location types
       const LOCATION_TYPES: Record<string, string> = {
@@ -396,10 +425,15 @@ export class OverviewService {
   }
 
 
-  async getGateSecurityStatus() {
+  async getGateSecurityStatus(client_id: string,
+    location_id: string,
+    from: string,
+    to: string,
+    camera_id?: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);
 
       const response = await client.search({
         index: cameraIndexName,
@@ -459,6 +493,6 @@ export class OverviewService {
     }
   }
 
-  
-  }
+
+}
 
