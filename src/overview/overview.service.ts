@@ -92,16 +92,16 @@ export class OverviewService {
     }
   }
 
-  async getAiPatterns(limit: number = 10) {
+  async getAiPatterns(client_id: string, camera_id: string, location_id: string, from: string, to: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
       // Get all data grouped by unique locations
       const response = await client.search({
         index: cameraIndexName,
         size: 0,
-        query: { match_all: {} },
+        query: { bool: { must: match_query } },
         aggs: {
           unique_locations: {
             terms: {
@@ -156,7 +156,7 @@ export class OverviewService {
         };
       })
 
-      return alerts.slice(0, limit); // Limit the results
+      return alerts.slice(0, 5); // Limit the results
 
     } catch (error) {
       this.logger.error('Error getting active alerts:', error);
@@ -204,11 +204,11 @@ export class OverviewService {
     { time: '4PM', students: 30, staff: 20 }
   ];
 
-  async getCampusTraffic() {
+  async getCampusTraffic(client_id: string, camera_id: string, location_id: string, from: string, to: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
       const now = new Date();
       // Start of the current day in UTC
       const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
@@ -217,11 +217,7 @@ export class OverviewService {
         index: cameraIndexName,
         size: 1000,
         query: {
-          range: {
-            timestamp: {
-              gte: "2026-02-12 00:00:00"
-            }
-          }
+          bool: { must: match_query }
         },
         _source: ['timestamp', 'person_data']
       });
@@ -286,14 +282,15 @@ export class OverviewService {
     }
   }
 
-  async getCameraNetworkStatus() {
+  async getCameraNetworkStatus(client_id: string, camera_id: string, location_id: string, from: string, to: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
       const response = await client.search({
         index: cameraIndexName,
         size: 0,
+        query: { bool: { must: match_query } },
         aggs: {
           by_location: {
             terms: {
@@ -327,11 +324,11 @@ export class OverviewService {
   }
 
 
-  async getSpaceUtilization() {
+  async getSpaceUtilization(client_id: string, camera_id: string, location_id: string, from: string, to: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
       // Static map for location types
       const LOCATION_TYPES: Record<string, string> = {
         'Research Lab': 'lab',
@@ -348,6 +345,7 @@ export class OverviewService {
       const response = await client.search({
         index: cameraIndexName,
         size: 0,
+        query: { bool: { must: match_query } },
         aggs: {
           by_location: {
             terms: {
@@ -396,14 +394,15 @@ export class OverviewService {
   }
 
 
-  async getGateSecurityStatus() {
+  async getGateSecurityStatus(client_id: string, camera_id: string, location_id: string, from: string, to: string) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-
+      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
       const response = await client.search({
         index: cameraIndexName,
         size: 0,
+        query: { bool: { must: match_query } },
         aggs: {
           by_location: {
             terms: {

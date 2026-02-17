@@ -17,28 +17,58 @@ export class OverviewController {
   }
 
   @Get('ai-patterns')
-  async getAiPattern() {
-    return this.overviewService.getAiPatterns();
+  async getAiPattern(
+    @Query('client_id') client_id: string,
+    @Query('camera_id') camera_id: string,
+    @Query('location_id') location_id: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ) {
+    return this.overviewService.getAiPatterns(client_id, camera_id, location_id, from, to);
   }
 
   @Get('camera-network-status')
-  async getCameraNetworkStatus() {
-    return this.overviewService.getCameraNetworkStatus();
+  async getCameraNetworkStatus(
+    @Query('client_id') client_id: string,
+    @Query('camera_id') camera_id: string,
+    @Query('location_id') location_id: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ) {
+    return this.overviewService.getCameraNetworkStatus(client_id, camera_id, location_id, from, to);
   }
 
   @Get('campus-traffic')
-  async getCampusTraffic() {
-    return this.overviewService.getCampusTraffic();
+  async getCampusTraffic(
+    @Query('client_id') client_id: string,
+    @Query('camera_id') camera_id: string,
+    @Query('location_id') location_id: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ) {
+    return this.overviewService.getCampusTraffic(client_id, camera_id, location_id, from, to);
   }
 
   @Get('space-utilization')
-  async getSpaceUtilization() {
-    return this.overviewService.getSpaceUtilization();
+  async getSpaceUtilization(
+    @Query('client_id') client_id: string,
+    @Query('camera_id') camera_id: string,
+    @Query('location_id') location_id: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ) {
+    return this.overviewService.getSpaceUtilization(client_id, camera_id, location_id, from, to);
   }
 
   @Get('security-access')
-  async getSecurityAccess() {
-    return this.overviewService.getGateSecurityStatus();
+  async getSecurityAccess(
+    @Query('client_id') client_id: string,
+    @Query('camera_id') camera_id: string,
+    @Query('location_id') location_id: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ) {
+    return this.overviewService.getGateSecurityStatus(client_id, camera_id, location_id, from, to);
   }
   
 }

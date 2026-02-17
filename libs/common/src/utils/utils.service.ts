@@ -59,9 +59,9 @@ export class UtilsService {
     if (location_id && location_id.trim() !== '' && location_id.trim() !== 'null') {
       match_query.push({ match: { location_id: location_id } });
     }
-    // if (from && from.trim() !== '' && from.trim() !== 'null') {
-    //   match_query.push({ range: { timestamp: { gte: from, lte: to } } });
-    // }
+    if (from && from.trim() !== '' && from.trim() !== 'null') {
+      match_query.push({ range: { timestamp: { gte: from, lte: to } } });
+    }
     return match_query;
   }
 }
