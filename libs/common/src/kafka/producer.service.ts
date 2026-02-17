@@ -179,7 +179,11 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
       return { success: 0, failed: 0 };
     }
 
-    const topic = this.configService.get<string>('kafka.topics.cameraOccupancy') ?? 'visionops.camera.v1';
+    const topic = this.configService.get<string>('kafka.topics.cameraOccupancy');
+    if (!topic) {
+      this.logger.error('Kafka topic not configured: set KAFKA_TOPIC_CAMERA env var');
+      return { success: 0, failed: 0 };
+    }
     let success = 0;
     let failed = 0;
 

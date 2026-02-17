@@ -88,9 +88,12 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
 
   private async subscribe() {
     try {
-      const cameraOccupancy = this.configService.get<string>('kafka.topics.cameraOccupancy') ?? 'visionops.camera.v1';
+      const cameraOccupancy = this.configService.get<string>('kafka.topics.cameraOccupancy');
+      if (!cameraOccupancy) {
+        throw new Error('Kafka topic not configured: set KAFKA_TOPIC_CAMERA env var');
+      }
       await this.consumer.subscribe({ topics: [cameraOccupancy], fromBeginning: false });
-      this.logger.log(`Subscribed to topic: ${cameraOccupancy} (fromBeginning: true)`);
+      this.logger.log(`Subscribed to topic: ${cameraOccupancy} (fromBeginning: false)`);
     } catch (error) {
       this.logger.error('Failed to subscribe to topic', error);
       throw error;

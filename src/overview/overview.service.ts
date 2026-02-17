@@ -212,14 +212,14 @@ export class OverviewService {
       const now = new Date();
       // Start of the current day in UTC
       const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
+      console.log("startOfDay",startOfDay);
       const response = await client.search({
         index: cameraIndexName,
         size: 1000,
         query: {
           range: {
             timestamp: {
-              gte: "2026-02-12 00:00:00",
-              lte: "2026-02-17 23:59:59"
+              gte: "2026-02-12 00:00:00"
             }
           }
         },
@@ -227,30 +227,32 @@ export class OverviewService {
       });
 
       const hits = response.hits.hits;
-      console.log("hits",hits);
+      //console.log("hits",hits);
       // Initialize hourly buckets (0-23)
       const hourlyData: Record<number, { students: Set<string>, staff: Set<string> }> = {};
       for (let i = 0; i < 24; i++) {
         hourlyData[i] = { students: new Set(), staff: new Set() };
       }
-
+      //console.log("hourlyData",hourlyData);
       hits.forEach((hit: any) => {
         const source = hit._source;
         const timestamp = new Date(source.timestamp);
         const hour = timestamp.getUTCHours();
         const personData = source.person_data || [];
-
+        //console.log("hour",hour);
         if (hourlyData[hour]) {
           personData.forEach((p: any) => {
             if (p.person_type === 'student') {
+              //console.log("student",p.person_id);
               hourlyData[hour].students.add(p.person_id);
             } else if (p.person_type === 'staff') {
+              //console.log("staff",p.person_id);
               hourlyData[hour].staff.add(p.person_id);
             }
           });
         }
       });
-
+      console.log("hourlyData",hourlyData);
       // Format response
       const result = [];
       const currentHour = now.getUTCHours();
@@ -266,14 +268,14 @@ export class OverviewService {
         const hourLabel = i === 12 ? '12PM' : i > 12 ? `${i - 12}PM` : `${i}AM`;
 
         // Only include past/current hours (optional, but good for "traffic so far")
-        if (i <= currentHour) {
+        //if (i <= currentHour) {
           result.push({
             id: randomUUID(),
             time: hourLabel,
             students: hourlyData[i].students.size,
             staff: hourlyData[i].staff.size
           });
-        }
+        //}
       }
       
       return result;

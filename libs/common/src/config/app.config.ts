@@ -23,7 +23,7 @@ export default () => ({
       multiplier: parseFloat(process.env.KAFKA_RETRY_MULTIPLIER ?? '2'),
     },
     topics: {
-      cameraOccupancy: process.env.KAFKA_TOPIC_CAMERA ?? 'visionops.camera.v1',
+      cameraOccupancy: process.env.KAFKA_TOPIC_CAMERA || '',
     },
     producer: {
       clientId: process.env.KAFKA_PRODUCER_CLIENT_ID ?? 'vision-ops-producer',
