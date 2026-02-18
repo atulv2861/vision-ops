@@ -7,9 +7,11 @@ import { FilterModule } from './filter';
 import { HealthModule } from './health';
 import { OverviewModule } from './overview';
 
+import { StudentsModule } from './students/students.module';
+
 @Module({
-  imports: [ConfigModule, KafkaModule, HealthModule, OverviewModule, EventsModule, FilterModule],
+  imports: [ConfigModule, KafkaModule, HealthModule, OverviewModule, EventsModule, FilterModule, StudentsModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
