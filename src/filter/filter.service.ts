@@ -51,7 +51,7 @@ async getCameraLocation() {
     }
 }
   
-async getCameraByLocation(location_id: string) {
+async getCameraByLocation(location_ids: string[]) {
     try {
         const client = this.elasticService.getClient();
         const cameraIndexName = this.elasticService.getCameraIndexName();
@@ -59,7 +59,7 @@ async getCameraByLocation(location_id: string) {
         const response = await client.search({
             index: cameraIndexName,
             query: {
-                term: { location_id: location_id } // Filter by location_id
+                terms: { location_id: location_ids } // Filter by location_id
             },
             size: 1000, // Get actual documents
             _source: ['camera_id', 'name'] // Get camera_id and location name

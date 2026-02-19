@@ -1,74 +1,92 @@
-import { Controller, Get, Query, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Query, Body, BadRequestException, Post } from '@nestjs/common';
 import { OverviewService } from './overview.service';
+import {
+  RequestQueryDto,
+  RequestBodyDto,
+} from '../../libs/common/src/dto';
 
 @Controller('overview')
 export class OverviewController {
-  constructor(private readonly overviewService: OverviewService) { }
+  constructor(private readonly overviewService: OverviewService) {}
 
-  @Get('overview-cards')
+  @Post('overview-cards')
   async getOverviewCards(
-    @Query('client_id') client_id: string,
-    @Query('camera_id') camera_id: string,
-    @Query('location_id') location_id: string,
-    @Query('from') from: string,
-    @Query('to') to: string,
+    @Query() query: RequestQueryDto,
+    @Body() body: RequestBodyDto,
   ) {
-    return this.overviewService.getSummary(client_id, location_id, from, to, camera_id);
+    if (!body?.camera_ids?.length) {
+      throw new BadRequestException('Body parameter camera_ids is required and must contain at least one id');
+    }
+    return this.overviewService.getSummary(
+      query.client_id,
+      query.from,
+      query.to,
+      body.camera_ids,
+    );
   }
 
-  @Get('ai-patterns')
+  @Post('ai-patterns')
   async getAiPattern(
-    @Query('client_id') client_id: string,
-    @Query('camera_id') camera_id: string,
-    @Query('location_id') location_id: string,
-    @Query('from') from: string,
-    @Query('to') to: string,
+    @Query() query: RequestQueryDto,
+    @Body() body: RequestBodyDto,
   ) {
-    return this.overviewService.getAiPatterns(client_id, camera_id, location_id, from, to);
+    return this.overviewService.getAiPatterns(
+      query.client_id,
+      query.from,
+      query.to,
+      body?.camera_ids ?? [],
+    );
   }
 
-  @Get('camera-network-status')
+  @Post('camera-network-status')
   async getCameraNetworkStatus(
-    @Query('client_id') client_id: string,
-    @Query('camera_id') camera_id: string,
-    @Query('location_id') location_id: string,
-    @Query('from') from: string,
-    @Query('to') to: string,
+    @Query() query: RequestQueryDto,
+    @Body() body: RequestBodyDto,
   ) {
-    return this.overviewService.getCameraNetworkStatus(client_id, camera_id, location_id, from, to);
+    return this.overviewService.getCameraNetworkStatus(
+      query.client_id,
+      query.from,
+      query.to,
+      body.camera_ids ?? [],
+    );
   }
 
-  @Get('campus-traffic')
+  @Post('campus-traffic')
   async getCampusTraffic(
-    @Query('client_id') client_id: string,
-    @Query('camera_id') camera_id: string,
-    @Query('location_id') location_id: string,
-    @Query('from') from: string,
-    @Query('to') to: string,
+    @Query() query: RequestQueryDto,
+    @Body() body: RequestBodyDto,
   ) {
-    return this.overviewService.getCampusTraffic(client_id, camera_id, location_id, from, to);
+    return this.overviewService.getCampusTraffic(
+      query.client_id,
+      query.from,
+      query.to,
+      body.camera_ids ?? [],
+    );
   }
 
-  @Get('space-utilization')
+  @Post('space-utilization')
   async getSpaceUtilization(
-    @Query('client_id') client_id: string,
-    @Query('camera_id') camera_id: string,
-    @Query('location_id') location_id: string,
-    @Query('from') from: string,
-    @Query('to') to: string,
+    @Query() query: RequestQueryDto,
+    @Body() body: RequestBodyDto,
   ) {
-    return this.overviewService.getSpaceUtilization(client_id, camera_id, location_id, from, to);
+    return this.overviewService.getSpaceUtilization(
+      query.client_id,
+      query.from,
+      query.to,
+      body.camera_ids ?? [],
+    );
   }
 
-  @Get('security-access')
+  @Post('security-access')
   async getSecurityAccess(
-    @Query('client_id') client_id: string,
-    @Query('camera_id') camera_id: string,
-    @Query('location_id') location_id: string,
-    @Query('from') from: string,
-    @Query('to') to: string,
+    @Query() query: RequestQueryDto,
+    @Body() body: RequestBodyDto,
   ) {
-    return this.overviewService.getGateSecurityStatus(client_id, camera_id, location_id, from, to);
+    return this.overviewService.getGateSecurityStatus(
+      query.client_id,
+      query.from,
+      query.to,
+      body.camera_ids ?? [],
+    );
   }
-  
 }

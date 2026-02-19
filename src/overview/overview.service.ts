@@ -36,14 +36,13 @@ export class OverviewService {
    */
   async getSummary(
     client_id: string, 
-    location_id: string, 
     from: string,
     to: string,
-    camera_id?: string) {
+    camera_ids?: string[]) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
+      const match_query = this.utilsService.createQuery(client_id, camera_ids, from, to);     
 
       const response = await client.search({
         index: cameraIndexName,
@@ -92,11 +91,15 @@ export class OverviewService {
     }
   }
 
-  async getAiPatterns(client_id: string, camera_id: string, location_id: string, from: string, to: string) {
+  async getAiPatterns(
+    client_id: string, 
+    from: string, 
+    to: string,
+    camera_ids?: string[]) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
+      const match_query = this.utilsService.createQuery(client_id, camera_ids, from, to);     
       // Get all data grouped by unique locations
       const response = await client.search({
         index: cameraIndexName,
@@ -204,11 +207,15 @@ export class OverviewService {
     { time: '4PM', students: 30, staff: 20 }
   ];
 
-  async getCampusTraffic(client_id: string, camera_id: string, location_id: string, from: string, to: string) {
+  async getCampusTraffic(
+    client_id: string, 
+    from: string, 
+    to: string,
+    camera_ids: string[]) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
+      const match_query = this.utilsService.createQuery(client_id, camera_ids, from, to);     
       const now = new Date();
       // Start of the current day in UTC
       const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
@@ -282,11 +289,15 @@ export class OverviewService {
     }
   }
 
-  async getCameraNetworkStatus(client_id: string, camera_id: string, location_id: string, from: string, to: string) {
+  async getCameraNetworkStatus(
+    client_id: string, 
+    from: string, 
+    to: string,
+    camera_ids: string[]) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
+      const match_query = this.utilsService.createQuery(client_id, camera_ids, from, to);     
       const response = await client.search({
         index: cameraIndexName,
         size: 0,
@@ -324,11 +335,15 @@ export class OverviewService {
   }
 
 
-  async getSpaceUtilization(client_id: string, camera_id: string, location_id: string, from: string, to: string) {
+  async getSpaceUtilization(
+    client_id: string, 
+    from: string, 
+    to: string,
+    camera_ids: string[]) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
+      const match_query = this.utilsService.createQuery(client_id, camera_ids, from, to);     
       // Static map for location types
       const LOCATION_TYPES: Record<string, string> = {
         'Research Lab': 'lab',
@@ -394,11 +409,15 @@ export class OverviewService {
   }
 
 
-  async getGateSecurityStatus(client_id: string, camera_id: string, location_id: string, from: string, to: string) {
+  async getGateSecurityStatus(
+    client_id: string, 
+    from: string, 
+    to: string,
+    camera_ids: string[]) {
     try {
       const client = this.elasticService.getClient();
       const cameraIndexName = this.elasticService.getCameraIndexName();
-      const match_query = this.utilsService.createQuery(client_id, camera_id, location_id, from, to);     
+      const match_query = this.utilsService.createQuery(client_id, camera_ids, from, to);     
       const response = await client.search({
         index: cameraIndexName,
         size: 0,

@@ -1,4 +1,4 @@
-import { Controller, Get, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Query, BadRequestException, Req, Body, Post } from '@nestjs/common';
 import { FilterService } from './filter.service';
 
 @Controller('filter')
@@ -15,13 +15,13 @@ export class FilterController {
     return this.filterService.getCameraLocation();
   }
 
-  @Get("camera")
-  async getCameraByLocation(
-    @Query('location_id') location_id: string,
+  @Post("cameras")
+  async getCamerasByLocation(
+    @Body("location_ids") location_ids: string[],
   ) {
-    if (!location_id) {
-      throw new BadRequestException('Query parameter location_id is required');
+    if (location_ids.length === 0) {
+      throw new BadRequestException('Body parameter location_ids is required');
     }
-    return this.filterService.getCameraByLocation(location_id);
+    return this.filterService.getCameraByLocation(location_ids);
   }
 }

@@ -6,9 +6,10 @@ import { EventsModule } from './events/events.module';
 import { FilterModule } from './filter';
 import { HealthModule } from './health';
 import { OverviewModule } from './overview';
+import { StudentsModule } from './students';
 
 @Module({
-  imports: [ConfigModule, KafkaModule, HealthModule, OverviewModule, EventsModule, FilterModule],
+  imports: [ConfigModule, KafkaModule, HealthModule, OverviewModule, EventsModule, FilterModule, StudentsModule],
   controllers: [AppController],
   providers: [AppService],
 })

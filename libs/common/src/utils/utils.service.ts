@@ -47,17 +47,13 @@ export class UtilsService {
     }
   }
 
-  createQuery(client_id: string, camera_id?: string, location_id?: string, from?: string, to?: string) {
+  createQuery(client_id: string, camera_ids?: string[], from?: string, to?: string) {
     const match_query = [];
     if (client_id && client_id.trim() !== '' && client_id.trim() !== 'null') {
       match_query.push({ match: { client_id: client_id } });
     }
-    if (camera_id && camera_id.trim() !== '' && camera_id.trim() !== 'null') {
-      match_query.push({ match: { camera_id: camera_id } });
-    }
-  
-    if (location_id && location_id.trim() !== '' && location_id.trim() !== 'null') {
-      match_query.push({ match: { location_id: location_id } });
+    if (camera_ids && camera_ids.length > 0) {
+      match_query.push({ terms: { camera_id: camera_ids } });
     }
     if (from && from.trim() !== '' && from.trim() !== 'null') {
       match_query.push({ range: { timestamp: { gte: from, lte: to } } });
