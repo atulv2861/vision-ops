@@ -1,4 +1,5 @@
 export { KafkaModule } from './kafka.module';
-export { KafkaConsumerService } from './consumer.service';
-export { KafkaProducerService } from './producer.service';
-export type { CameraOccupancyDocument, CameraOccupancyPerson } from './camera-occupancy.types';
+export { ConsumerService } from './consumer.service';
+export type { KafkajsConsumerOptions } from './consumer.service';
+export type { IConsumer } from './consumer.interface';
+export { KafkajsConsumer } from './kafkajs.consumer';

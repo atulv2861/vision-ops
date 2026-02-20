@@ -15,7 +15,7 @@ export class FilterService {
 async getCameraLocation() {
     try {
       const client = this.elasticService.getClient();
-      const cameraIndexName = this.elasticService.getCameraIndexName();
+      const cameraIndexName = this.elasticService.getPeopleDistributionIndexName();
       const response = await client.search({
         index: cameraIndexName,
         size: 0,
@@ -54,7 +54,7 @@ async getCameraLocation() {
 async getCameraByLocation(location_ids: string[]) {
     try {
         const client = this.elasticService.getClient();
-        const cameraIndexName = this.elasticService.getCameraIndexName();
+        const cameraIndexName = this.elasticService.getPeopleDistributionIndexName();
         
         const response = await client.search({
             index: cameraIndexName,

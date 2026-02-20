@@ -28,7 +28,7 @@ export class StudentsService {
         camera_ids?: string[]) {
         try {
             const client = this.elasticService.getClient();
-            const cameraIndexName = this.elasticService.getCameraIndexName();
+            const cameraIndexName = this.elasticService.getPeopleDistributionIndexName();
             const match_query = this.utilsService.createQuery(client_id, camera_ids, from, to);
 
             // Default filters to ensure we are looking at specific data if needed.
@@ -172,7 +172,7 @@ export class StudentsService {
         camera_ids?: string[]) {
         try {
             const client = this.elasticService.getClient();
-            const cameraIndexName = this.elasticService.getCameraIndexName();
+            const cameraIndexName = this.elasticService.getPeopleDistributionIndexName();
             const match_query = this.utilsService.createQuery(client_id, camera_ids, from, to);
 
             // Default filters to ensure we are looking at specific data if needed.

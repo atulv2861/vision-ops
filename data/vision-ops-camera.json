@@ -96,12 +96,12 @@
     "client_id": "g9e1i3f5-7h8j-8e2i-3g6f-0j1h7i2e9f0g",
     "camera_id": "6991aeca96f50a2873f35683",
     "name": "Camera-06",
-    "status": "ACTIVE",
     "timestamp": "2026-02-12 11:00:00",
     "location": "Cafeteria",
     "location_id": "e5i8f2g7-9h6j-8e1i-3f5g-0j2h7i6e1f9g",
     "occupancy_capacity": 35,
     "total_person": 6,
+    "avg_dwell_time": 67.33,
     "person_data": [
       {"person_id": "5678901234", "person_type": "contractor", "dwell_time": 82},
       {"person_id": "6789012345", "person_type": "security_guard", "dwell_time": 93},
