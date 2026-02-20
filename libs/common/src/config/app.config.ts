@@ -48,4 +48,7 @@ export default () => ({
     cameraIndex: process.env.ELASTICSEARCH_CAMERA_INDEX ?? 'vision-ops-camera',
     requestTimeout: parseInt(process.env.ELASTICSEARCH_REQUEST_TIMEOUT ?? '30000', 10),
   },
+  mongodb: {
+    uri: process.env.MONGODB_URI ?? 'mongodb://username:password@localhost:27017/vision-ops',
+  },
 });

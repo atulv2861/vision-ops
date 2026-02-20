@@ -21,4 +21,5 @@ export {
   KafkaProducerService,
 } from './kafka';
 export type { CameraOccupancyDocument, CameraOccupancyPerson } from './kafka';
+export { MongoModule, MongoService, CameraEvent } from './mongo';
 export { UtilsModule, UtilsService } from './utils';

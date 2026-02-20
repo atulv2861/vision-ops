@@ -28,6 +28,8 @@ export const VISION_OPS_CAMERA_INDEX_MAPPING = {
       },
     },
     unique_person: { type: 'integer' as const },
+    avg_dwell_time: { type: 'float' as const },
+    cumulative_unique_person: { type: 'integer' as const }
   },
 };
 

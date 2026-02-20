@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
 import { ElasticService } from '../elastic/elastic.service';
 import { CameraDetailsService } from '../enrichment/camera-details.service';
+import { MongoService } from '../mongo/mongo.service';
 
 @Injectable()
 export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
@@ -16,6 +17,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     @Inject(forwardRef(() => ElasticService))
     private readonly elasticService: ElasticService,
     private readonly cameraDetailsService: CameraDetailsService,
+    private readonly mongoService: MongoService,
   ) {
     const broker = this.configService.get<string>('kafka.broker') || 'localhost:9092';
     const clientId = this.configService.get<string>('kafka.clientId') || 'vision-ops-consumer';
@@ -125,7 +127,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     const { offset, key, value, timestamp } = message;
 
     this.logger.log(
-      `Received message - Topic: ${topic}, Partition: ${partition}, Offset: ${offset}`,
+      `📥 Kafka Event Received - Topic: ${topic}, Partition: ${partition}, Offset: ${offset}`,
     );
 
     try {
@@ -194,7 +196,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
         if (timestamp.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
           return timestamp;
         }
-        
+
         // Try parsing as date
         const date = new Date(timestamp);
         if (isNaN(date.getTime())) {
@@ -221,6 +223,30 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     this.logger.debug('Processing camera occupancy', { camera_id: data?.camera_id, offset: metadata.offset });
     try {
       const details = await this.cameraDetailsService.getByCameraId(data?.camera_id);
+
+      // 1. Extract the dwell time data to compute the new_dwell_sum
+      const personData = Array.isArray(data.person_data) ? data.person_data : [];
+      let new_dwell_sum = 0;
+      personData.forEach((p: any) => {
+        new_dwell_sum += Number(p.dwell_time) || 0;
+      });
+      // The new unique count for this batch is assumed to be the unique_person of this message
+      const new_unique_count = Number(data.unique_person) || 0;
+
+      // 2. Fetch previous average and previous unique counts from Elasticsearch
+      const prevStats = await this.elasticService.getLatestCameraStats(data.camera_id);
+      const previous_avg = prevStats.avg_dwell_time;
+      const previous_unique_count = prevStats.cumulative_unique_person;
+
+      // 3. Compute the updated average dwell time using the provided formula
+      let avg_dwell_time = previous_avg;
+      const cumulative_unique_person = previous_unique_count + new_unique_count;
+
+      if (cumulative_unique_person > 0) {
+        // Formula: (previous_avg × previous_unique_count + new_dwell_sum) / (previous_unique_count + new_unique_count)
+        avg_dwell_time = ((previous_avg * previous_unique_count) + new_dwell_sum) / cumulative_unique_person;
+      }
+
       // Build from Kafka payload first so total_person, occupancy_capacity always match the JSON; then overlay only API enrichment fields.
       const merged = {
         client_id: details?.client_id ?? data.client_id,
@@ -232,10 +258,19 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
         location_id: details?.location_id ?? data.location_id,
         occupancy_capacity: Number(data.occupancy_capacity) || 0,
         total_person: Number(data.total_person) || 0,
-        person_data: Array.isArray(data.person_data) ? data.person_data : [],
-        unique_person: Number(data.unique_person) || 0,
+        person_data: personData,
+        unique_person: new_unique_count,
+        // 4. Append the calculated avg_dwell_time and new cumulative total to the document
+        avg_dwell_time: parseFloat(avg_dwell_time.toFixed(2)),
+        cumulative_unique_person,
       };
+
+      // Save to Elastic
       await this.elasticService.indexCameraDocument(merged);
+
+      // Save to MongoDB
+      await this.mongoService.saveCameraEvent(merged);
+
       this.logger.log(`Camera occupancy indexed - camera_id: ${data?.camera_id}, offset: ${metadata.offset}`);
     } catch (error: any) {
       this.logger.error(`Error indexing camera occupancy: ${error.message}`, { camera_id: data?.camera_id, offset: metadata.offset });
