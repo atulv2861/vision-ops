@@ -62,31 +62,42 @@ export class OverviewConsumerService implements OnModuleInit {
             this.logger.log('====================================61', details)
           }
           this.logger.log('====================================62', details)
-          const enriched = details
-            ? { ...parsed, camera_details: details }
-            : parsed;
-
+         
+          // calculate the avg_dwell_time
           const latestStats = await this.elasticService.getLatestCameraStats(camera_id);
           const _id = new Types.ObjectId().toString();
-          const toStore = {
-            client_id: (enriched.client_id as string) ?? '',
+          const mongo_data = {
+            client_id: details?.client_id ?? '',
             camera_id: camera_id,
-            name: (enriched.name as string) ?? '',
-            timestamp: ((enriched.timestamp as string) ?? '')?.trim() || timestampSameFormatFallback(),
-            location: (enriched.location as string) ?? '',
-            location_id: (enriched.location_id as string) ?? '',
-            occupancy_capacity: (enriched.occupancy_capacity as number) ?? 0,
-            total_person: (enriched.total_person as number) ?? 0,
+            timestamp: ((parsed.timestamp as string) ?? '')?.trim() || timestampSameFormatFallback(),           
+            occupancy_capacity: (parsed.occupancy_capacity as number) ?? 0,
+            total_person: (parsed.total_person as number) ?? 0,
             avg_dwell_time: enriched.avg_dwell_time as number | undefined,
-            person_data: Array.isArray(enriched.person_data)
-              ? (enriched.person_data as Array<{ person_id: string; person_type: string; dwell_time: number }>)
+            person_data: Array.isArray(parsed.person_data)
+              ? (parsed.person_data as Array<{ person_id: string; person_type: string; dwell_time: number }>)
               : [],
-            unique_person: (enriched.unique_person as number) ?? 0,
+            unique_person: (parsed.unique_person as number) ?? 0,
+          };
+
+          const elastic_data = {
+            client_id: details?.client_id ?? '',
+            camera_id: camera_id,
+            name: details?.name ?? '',
+            timestamp: ((parsed.timestamp as string) ?? '')?.trim() || timestampSameFormatFallback(),
+            location: details?.location ?? '',
+            location_id: details?.location_id ?? '',
+            occupancy_capacity: (parsed.occupancy_capacity as number) ?? 0,
+            total_person: (parsed.total_person as number) ?? 0,
+            avg_dwell_time: enriched.avg_dwell_time as number | undefined,
+            person_data: Array.isArray(parsed.person_data)
+              ? (parsed.person_data as Array<{ person_id: string; person_type: string; dwell_time: number }>)
+              : [],
+            unique_person: (parsed.unique_person as number) ?? 0,
           };
           //this.logger.log('====================================89', toStore)
-          await this.peopleDistributionModel.create({ _id, ...toStore });
-          await this.elasticService.indexPeopleDistributionDocument({ _id: _id, ...toStore });
-          this.logger.log(`[people_distribution] stored Mongo+ES: camera_id=${toStore.camera_id}`);
+          await this.peopleDistributionModel.create({ _id, ...mongo_data });
+          await this.elasticService.indexPeopleDistributionDocument({ _id: _id, ...elastic_data });
+          this.logger.log(`[people_distribution] stored Mongo+ES: camera_id=${mongo_data.camera_id}`);
         } catch (error) {
           this.logger.error(`Error processing people_distribution message: ${error?.message}`);
         }
