@@ -72,7 +72,7 @@ export class OverviewConsumerService implements OnModuleInit {
             timestamp: ((parsed.timestamp as string) ?? '')?.trim() || timestampSameFormatFallback(),           
             occupancy_capacity: (parsed.occupancy_capacity as number) ?? 0,
             total_person: (parsed.total_person as number) ?? 0,
-            avg_dwell_time: enriched.avg_dwell_time as number | undefined,
+            avg_dwell_time: 5.5,
             person_data: Array.isArray(parsed.person_data)
               ? (parsed.person_data as Array<{ person_id: string; person_type: string; dwell_time: number }>)
               : [],
@@ -88,7 +88,7 @@ export class OverviewConsumerService implements OnModuleInit {
             location_id: details?.location_id ?? '',
             occupancy_capacity: (parsed.occupancy_capacity as number) ?? 0,
             total_person: (parsed.total_person as number) ?? 0,
-            avg_dwell_time: enriched.avg_dwell_time as number | undefined,
+            avg_dwell_time: 5.5,
             person_data: Array.isArray(parsed.person_data)
               ? (parsed.person_data as Array<{ person_id: string; person_type: string; dwell_time: number }>)
               : [],
