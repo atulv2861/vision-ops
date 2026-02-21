@@ -106,7 +106,7 @@ export class ElasticService implements OnModuleInit {
                   dwell_time: { type: 'integer' },
                 },
               },
-              unique_person: { type: 'integer' },              
+              unique_person: { type: 'integer' },
             },
           },
         });
@@ -227,10 +227,10 @@ export class ElasticService implements OnModuleInit {
     }
   }
 
-  async getLatestCameraStats(cameraId: string): Promise<{ avg_dwell_time: number; cumulative_unique_person: number }> {
+  async getLatestCameraStats(cameraId: string): Promise<{ previous_avg_dwell_time: number; previous_total_person: number }> {
     try {
       const exists = await this.client.indices.exists({ index: this.peopleDistributionIndexName });
-      if (!exists) return { avg_dwell_time: 0, cumulative_unique_person: 0 };
+      if (!exists) return { previous_avg_dwell_time: 0,previous_total_person: 0 };
 
       const response = await this.client.search({
         index: this.peopleDistributionIndexName,
@@ -245,14 +245,14 @@ export class ElasticService implements OnModuleInit {
       if (hits.length > 0) {
         const doc = hits[0]._source as any;
         return {
-          avg_dwell_time: Number(doc.avg_dwell_time) || 0,
-          cumulative_unique_person: Number(doc.cumulative_unique_person) || 0
+          previous_avg_dwell_time: Number(doc.avg_dwell_time) || 0,
+          previous_total_person: Number(doc.total_person) || 0
         };
       }
-      return { avg_dwell_time: 0, cumulative_unique_person: 0 };
+      return { previous_avg_dwell_time: 0, previous_total_person: 0 };
     } catch (error) {
       this.logger.error(`Error fetching latest stats for camera ${cameraId}: ${error.message}`);
-      return { avg_dwell_time: 0, cumulative_unique_person: 0 };
+      return { previous_avg_dwell_time: 0, previous_total_person: 0 };
     }
   }
 }
