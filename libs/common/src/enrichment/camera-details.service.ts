@@ -48,6 +48,17 @@ export class CameraDetailsService {
       }
 
       const data = (await res.json()) as Record<string, unknown>;
+      this.logger.log('====================================51', data)
+      //Create a default camera details if the data is not found
+      if (!data.camera_id || !data.name || !data.client_id || !data.location || !data.location_id) {
+        return {
+          camera_id: camera_id,
+          name: 'Camera-01',
+          client_id: '507f1-f77bcf86-cd799-439011',
+          location: 'Main Campus',
+          location_id: '6991ada996f50a2873f3567e',
+        };
+      }
       const details: CameraDetails = {
         camera_id: (data.camera_id as string) ?? camera_id,
         name: (data.name as string) ?? (data.camera_name as string) ?? '',

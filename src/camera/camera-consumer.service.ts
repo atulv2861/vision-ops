@@ -62,7 +62,7 @@ export class CameraConsumerService implements OnModuleInit {
             : parsed;
 
           
-          const _id = new Types.ObjectId();
+          const _id = new Types.ObjectId().toString();
           const toStore = {
             client_id: (enriched.client_id as string) ?? (enriched.cliend_id as string) ?? '',
             name: (enriched.name as string) ?? '',
@@ -71,10 +71,10 @@ export class CameraConsumerService implements OnModuleInit {
             camera_id: camera_id,
             timestamp: ((enriched.timestamp as string) ?? '')?.trim() || timestampSameFormatFallback(),
             camera_status: (enriched.camera_status as number) ?? 0,
-            ...(details && { camera_details: details }),
           };
+          //this.logger.log('====================================74', toStore)
           await this.cameraStatusModel.create({ _id, ...toStore });
-          await this.elasticService.indexCameraStatusDocument({ _id: _id.toString(), ...toStore });
+          await this.elasticService.indexCameraStatusDocument({ _id: _id, ...toStore });
           this.logger.log(`[camera_status] stored Mongo+ES: ${JSON.stringify(enriched)}`);
         } catch (error) {
           this.logger.error(`Error processing camera_status message: ${error?.message}`);

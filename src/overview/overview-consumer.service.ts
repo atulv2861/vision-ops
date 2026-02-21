@@ -53,27 +53,24 @@ export class OverviewConsumerService implements OnModuleInit {
           if (!parsed) return;
           this.logger.log(`[people_distribution] ${JSON.stringify(parsed)}`);
           const camera_id = String(
-            parsed?.camera_id ?? parsed?.cameraId ?? parsed?.sencer_id ?? parsed?.sensor_id ?? parsed?.device_id ?? '',
+            parsed?.camera_id ?? parsed?.sensor_id ?? '',
           ).trim();
           let details = null;
           if (camera_id) {
+            this.logger.log('====================================60', camera_id)
             details = await this.cameraDetailsService.getByCameraId(camera_id);
+            this.logger.log('====================================61', details)
           }
+          this.logger.log('====================================62', details)
           const enriched = details
             ? { ...parsed, camera_details: details }
             : parsed;
 
-          const resolvedCameraId = String(
-            enriched.camera_id ?? enriched.cameraId ?? enriched.sensor_id ?? enriched.sensor_id ?? enriched.device_id ?? camera_id ?? '',
-          ).trim();
-          if (!resolvedCameraId) {
-            this.logger.warn('[people_distribution] skipping: missing camera_id');
-            return;
-          }
-          const _id = new Types.ObjectId();
+          const latestStats = await this.elasticService.getLatestCameraStats(camera_id);
+          const _id = new Types.ObjectId().toString();
           const toStore = {
             client_id: (enriched.client_id as string) ?? '',
-            camera_id: resolvedCameraId,
+            camera_id: camera_id,
             name: (enriched.name as string) ?? '',
             timestamp: ((enriched.timestamp as string) ?? '')?.trim() || timestampSameFormatFallback(),
             location: (enriched.location as string) ?? '',
@@ -85,10 +82,10 @@ export class OverviewConsumerService implements OnModuleInit {
               ? (enriched.person_data as Array<{ person_id: string; person_type: string; dwell_time: number }>)
               : [],
             unique_person: (enriched.unique_person as number) ?? 0,
-            ...(details && { camera_details: details }),
           };
+          //this.logger.log('====================================89', toStore)
           await this.peopleDistributionModel.create({ _id, ...toStore });
-          await this.elasticService.indexPeopleDistributionDocument({ _id: _id.toString(), ...toStore });
+          await this.elasticService.indexPeopleDistributionDocument({ _id: _id, ...toStore });
           this.logger.log(`[people_distribution] stored Mongo+ES: camera_id=${toStore.camera_id}`);
         } catch (error) {
           this.logger.error(`Error processing people_distribution message: ${error?.message}`);

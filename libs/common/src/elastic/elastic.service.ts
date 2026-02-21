@@ -166,7 +166,6 @@ export class ElasticService implements OnModuleInit {
     name?: string;
     timestamp?: string;
     camera_status: number;
-    camera_details?: { camera_id: string; name: string; client_id: string; location: string; location_id: string };
   }): Promise<void> {
     try {
       const { _id, ...doc } = document;
@@ -205,7 +204,6 @@ export class ElasticService implements OnModuleInit {
       avg_dwell_time?: number;
       person_data: Array<{ person_id: string; person_type: string; dwell_time: number }>;
       unique_person: number;
-      camera_details?: { camera_id: string; name: string; client_id: string; location: string; location_id: string };
     },
   ): Promise<void> {
     try {
@@ -226,6 +224,35 @@ export class ElasticService implements OnModuleInit {
     } catch (error) {
       this.logger.error(`Error indexing people_distribution document: ${error.message}`, error);
       throw error;
+    }
+  }
+
+  async getLatestCameraStats(cameraId: string): Promise<{ avg_dwell_time: number; cumulative_unique_person: number }> {
+    try {
+      const exists = await this.client.indices.exists({ index: this.peopleDistributionIndexName });
+      if (!exists) return { avg_dwell_time: 0, cumulative_unique_person: 0 };
+
+      const response = await this.client.search({
+        index: this.peopleDistributionIndexName,
+        size: 1,
+        sort: [{ timestamp: { order: 'desc' } }],
+        query: {
+          term: { camera_id: cameraId }
+        }
+      });
+
+      const hits = response.hits.hits;
+      if (hits.length > 0) {
+        const doc = hits[0]._source as any;
+        return {
+          avg_dwell_time: Number(doc.avg_dwell_time) || 0,
+          cumulative_unique_person: Number(doc.cumulative_unique_person) || 0
+        };
+      }
+      return { avg_dwell_time: 0, cumulative_unique_person: 0 };
+    } catch (error) {
+      this.logger.error(`Error fetching latest stats for camera ${cameraId}: ${error.message}`);
+      return { avg_dwell_time: 0, cumulative_unique_person: 0 };
     }
   }
 }
